@@ -7,10 +7,12 @@
     "jatos": "npm run jspsych -- build --jatos"
   },
   "dependencies": {
-    "jspsych": "^7.3.1",
     "@jspsych/plugin-fullscreen": "^1.1.2",
     "@jspsych/plugin-html-keyboard-response": "^1.1.2",
-    "@jspsych/plugin-preload": "^1.1.2"
+    "@jspsych/plugin-preload": "^1.1.2",
+    "dotenv-webpack": "^8.1.0",
+    "firebase": "^10.12.4",
+    "jspsych": "^7.3.1"
   },
   "devDependencies": {
     "jspsych-builder": "^4.4.0"
