@@ -1,6 +1,6 @@
 /**
  * @title dishonesty-exp
- * @description 
+ * @description
  * @version 0.1.0
  *
  * @assets assets/
@@ -8,19 +8,28 @@
 
 // You can import stylesheets (.scss or .css).
 import "../styles/main.scss";
+import "../styles/wheel.css";
 
 import FullscreenPlugin from "@jspsych/plugin-fullscreen";
 import HtmlKeyboardResponsePlugin from "@jspsych/plugin-html-keyboard-response";
 import PreloadPlugin from "@jspsych/plugin-preload";
 import { initJsPsych } from "jspsych";
 import DishonestyPlugin from "./plugins/dishonesty";
+import SpinningWheelPlugin from "./plugins/wheel";
+import DisplayTextPlugin from "./plugins/display-text";
 
 /**
  * This function will be executed by jsPsych Builder and is expected to run the jsPsych experiment
  *
  * @type {import("jspsych-builder").RunFunction}
  */
-export async function run({ assetPaths, input = {}, environment, title, version }) {
+export async function run({
+  assetPaths,
+  input = {},
+  environment,
+  title,
+  version,
+}) {
   const jsPsych = initJsPsych();
 
   const timeline = [];
@@ -40,24 +49,38 @@ export async function run({ assetPaths, input = {}, environment, title, version 
   });
 
   // Switch to fullscreen
-  // timeline.push({
-  //   type: FullscreenPlugin,
-  //   fullscreen_mode: true,
-  // });
+  timeline.push({
+    type: FullscreenPlugin,
+    fullscreen_mode: true,
+  });
 
   timeline.push({
-    type: DishonestyPlugin
-  })
+    type: SpinningWheelPlugin,
+  });
 
   timeline.push({
-    type: DishonestyPlugin
-  })
-
+    type: DishonestyPlugin,
+  });
 
   timeline.push({
-    type: DishonestyPlugin
-  })
+    type: DisplayTextPlugin,
+  });
 
+  timeline.push({
+    type: DishonestyPlugin,
+  });
+
+  timeline.push({
+    type: DisplayTextPlugin,
+  });
+
+  timeline.push({
+    type: DishonestyPlugin,
+  });
+
+  timeline.push({
+    type: DisplayTextPlugin,
+  });
 
   await jsPsych.run(timeline);
 

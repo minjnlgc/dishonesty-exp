@@ -1,3 +1,9 @@
+// Constants for roles
+export const ADVISOR = 'ADVISOR';
+export const ESTIMATOR = 'ESTIMATOR';
+
+// Constants for fixation cross
+export const FIXATION_CROSS_HTML = `<h1 style='font-size: 60px;'>+</h1>`;
 
 // constants for dishonesty trial
 export const JARS_IMG_NAMES = [

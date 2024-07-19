@@ -1,5 +1,5 @@
 import { ParameterType } from "jspsych";
-import { JARS_IMG_NAMES } from "../constants";
+import { FIXATION_CROSS_HTML, JARS_IMG_NAMES } from "../constants";
 
 const info = {
   name: "dishonesty-plugin",
@@ -112,12 +112,14 @@ class DishonestyPlugin {
 
     display_element
       .querySelector("#response-btn")
-      .addEventListener("click", () => {
-        this.handleOnClick(display_element, trial_data, startTime, trial);
+      .addEventListener("click", async () => {
+        await this.handleOnClick(display_element, trial_data, startTime, trial);
       });
 
     await this.delay(trial.trial_duration);
-    display_element.innerHTML = "";
+    display_element.innerHTML = FIXATION_CROSS_HTML;
+
+    await this.delay(2000);
     this.endTrial(trial_data);
   }
 
@@ -127,7 +129,7 @@ class DishonestyPlugin {
     );
   }
 
-  handleOnClick(display_element, trial_data, startTime, trial) {
+  async handleOnClick(display_element, trial_data, startTime, trial) {
     const rt = performance.now() - startTime;
     trial_data.rt = rt;
 
@@ -142,6 +144,9 @@ class DishonestyPlugin {
       display_element.querySelector("#response").value = null;
       trial_data.response = response;
       console.log(trial_data);
+
+      display_element.innerHTML = FIXATION_CROSS_HTML;
+      await this.delay(1000);
       this.endTrial(trial_data);
     }
   }
