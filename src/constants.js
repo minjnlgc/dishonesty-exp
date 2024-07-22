@@ -1,9 +1,17 @@
+// Constants for condition
+export const BASELINE = "BASELINE";
+export const IMAGERY = "IMAGERY";
+export const BREAK = "BREAK";
+
+export const CONDITION_ARR = [BASELINE, IMAGERY, BREAK];
+
 // Constants for roles
-export const ADVISOR = 'ADVISOR';
-export const ESTIMATOR = 'ESTIMATOR';
+export const ADVISOR = "ADVISOR";
+export const ESTIMATOR = "ESTIMATOR";
 
 // Constants for fixation cross
 export const FIXATION_CROSS_HTML = `<h1 style='font-size: 60px;'>+</h1>`;
+export const FIXATION_CROSS_DURATION = 3000;
 
 // constants for dishonesty trial
 export const JARS_IMG_NAMES = [
@@ -51,3 +59,10 @@ export const JARS_IMG_NAMES = [
   "6.28.jpg",
   "7.31.jpg",
 ];
+
+// Constants for instructions of different condition
+export const BLOCK_INSTRUCTIONS = {
+  BASELINE: "In the next block, you will have BASELINE",
+  IMAGERY: "In the next block, you will have IMAGERY",
+  BREAK: "In the next block, you will have BREAK",
+};

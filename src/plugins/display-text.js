@@ -1,10 +1,15 @@
 import { ParameterType } from "jspsych";
+import { FIXATION_CROSS_DURATION, FIXATION_CROSS_HTML } from "../constants";
 const info = {
   name: "display-text-plugin",
   parameters: {
     trial_duration: {
       type: ParameterType.INT,
-      default: 2000,
+      default: null,
+    },
+    fixation_cross_duration: {
+      type: ParameterType.INT,
+      default: FIXATION_CROSS_DURATION,
     },
   },
 };
@@ -15,8 +20,19 @@ class DisplayTextPlugin {
   }
 
   async trial(display_element, trial) {
-    display_element.innerHTML = `<h2>ESTIMATOR SUBMITTING ESTIMATE...</h2>`;
+    const random_trial_duration = this.jsPsych.randomization.randomInt(
+      5000,
+      8000
+    );
+    trial.trial_duration = random_trial_duration;
+
+    display_element.innerHTML = `<h1>ESTIMATOR submitting estimate</h1>
+      <center><div class="loader"></div></center>
+    `;
     await this.delay(trial.trial_duration);
+
+    display_element.innerHTML = FIXATION_CROSS_HTML;
+    await this.delay(trial.fixation_cross_duration);
     this.jsPsych.finishTrial();
   }
 

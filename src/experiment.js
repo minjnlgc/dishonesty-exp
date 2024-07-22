@@ -1,5 +1,5 @@
 /**
- * @title dishonesty-exp
+ * @title Coin experiment - UCL
  * @description
  * @version 0.1.0
  *
@@ -9,15 +9,27 @@
 // You can import stylesheets (.scss or .css).
 import "../styles/main.scss";
 import "../styles/wheel.css";
+import "../styles/loader.css";
 
+// jspsych
 import FullscreenPlugin from "@jspsych/plugin-fullscreen";
 import HtmlKeyboardResponsePlugin from "@jspsych/plugin-html-keyboard-response";
 import PreloadPlugin from "@jspsych/plugin-preload";
 import { initJsPsych } from "jspsych";
+
+// customised
 import DishonestyPlugin from "./plugins/dishonesty";
 import SpinningWheelPlugin from "./plugins/wheel";
 import DisplayTextPlugin from "./plugins/display-text";
+import SerialNumberPlugin from "./plugins/serial-num";
+import { BLOCK_INSTRUCTIONS, BREAK, CONDITION_ARR, IMAGERY } from "./constants";
+import {
+  createBreakConditionBlockSuit,
+  createMentalImageryConditionBlockSuit,
+  createMultipleBlock,
+} from "./block";
 
+// firebase
 import { initializeApp } from "firebase/app";
 import { getFirestore, setDoc, doc, getDoc } from "firebase/firestore";
 
@@ -99,56 +111,74 @@ export async function run({
   // Welcome screen
   timeline.push({
     type: HtmlKeyboardResponsePlugin,
-    stimulus: "<p>Welcome to dishonesty-exp!<p/>",
+    stimulus: "<p>Welcome to our experiment!</p>",
   });
 
   // Switch to fullscreen
-  timeline.push({
-    type: FullscreenPlugin,
-    fullscreen_mode: true,
-  });
+  // timeline.push({
+  //   type: FullscreenPlugin,
+  //   fullscreen_mode: true,
+  // });
 
+  const serial_num_trial = {
+    type: SerialNumberPlugin,
+  };
+
+  const dishonesty_trial = {
+    type: DishonestyPlugin,
+  };
+
+  const display_text_trial = {
+    type: DisplayTextPlugin,
+  };
+
+  const instruction_trial = {
+    type: HtmlKeyboardResponsePlugin,
+  };
+
+  // show the spinning wheel
   timeline.push({
     type: SpinningWheelPlugin,
   });
 
-  timeline.push({
-    type: DishonestyPlugin,
-  });
+  createMultipleBlock(
+    instruction_trial,
+    BLOCK_INSTRUCTIONS,
+    dishonesty_trial,
+    display_text_trial,
+    serial_num_trial,
+    CONDITION_ARR,
+    timeline
+  );
 
-  timeline.push({
-    type: DisplayTextPlugin,
-  });
+  // createMentalImageryConditionBlockSuit(
+  //   dishonesty_trial,
+  //   display_text_trial,
+  //   IMAGERY,
+  //   timeline
+  // )
 
-  timeline.push({
-    type: DishonestyPlugin,
-  });
-
-  timeline.push({
-    type: DisplayTextPlugin,
-  });
-
-  timeline.push({
-    type: DishonestyPlugin,
-  });
-
-  timeline.push({
-    type: DisplayTextPlugin,
-  });
+  // createBreakConditionBlockSuit(
+  //   dishonesty_trial,
+  //   display_text_trial,
+  //   serial_num_trial,
+  //   BREAK,
+  //   timeline
+  // );
 
   // Ending information, saved the data and redirect the users.
-  timeline.push({
-    type: HtmlKeyboardResponsePlugin,
-    stimulus: `
-      <p style='font-size: 20px'>This is the end of the experiment!</p>
-      <p style='font-size: 20px'>Thank you so much!</p>
-      <p style='font-size: 16px'>Press any key to complete your submission on prolific.</p>
-    `,
-    on_finish: async () => {
-      await saveSubjectData(subject_id, jsPsych.data.get());
-      window.location = process.env.PROLIFIC_REDIRECT_URL || "https://app.prolific.com/";
-    },
-  });
+  // timeline.push({
+  //   type: HtmlKeyboardResponsePlugin,
+  //   stimulus: `
+  //     <p style='font-size: 20px'>This is the end of the experiment!</p>
+  //     <p style='font-size: 20px'>Thank you so much!</p>
+  //     <p style='font-size: 16px'>Press any key to complete your submission on prolific.</p>
+  //   `,
+  //   on_finish: async () => {
+  //     await saveSubjectData(subject_id, jsPsych.data.get());
+  //     window.location = process.env.PROLIFIC_REDIRECT_URL || "https://app.prolific.com/";
+  //   },
+  // });
 
   await jsPsych.run(timeline);
 
