@@ -37,6 +37,7 @@ class QuizPlugin {
         rt: null,
         selected_option: null,
         correct: null,
+        incorrect_count: 0
       };
 
     const options_HTML = trial.options.reduce((acc, e, i) => {
@@ -70,7 +71,7 @@ class QuizPlugin {
       );
 
       console.log(parseInt(selectedOption.value));
-      console.log(trial.correct_option_idx);
+      //console.log(trial.correct_option_idx);
 
       if (
         selectedOption !== null &&
@@ -90,16 +91,18 @@ class QuizPlugin {
       ) {
         incorrectMessage.style.display = "block";
         errorMessage.style.display = "none";
-        
-        const endTime = performance.now();
-        const rt = endTime - startTime;
 
-        trial_data.rt = rt;
-        trial_data.selected_option = parseInt(selectedOption.value);
-        trial_data.correct = parseInt(selectedOption.value) === trial.correct_option_idx;
+        trial_data.incorrect_count += 1;
         
-        await this.delay(2000);
-        this.jsPsych.finishTrial(trial_data);
+        // const endTime = performance.now();
+        // const rt = endTime - startTime;
+
+        // trial_data.rt = rt;
+        // trial_data.selected_option = parseInt(selectedOption.value);
+        // trial_data.correct = parseInt(selectedOption.value) === trial.correct_option_idx;
+        
+        // await this.delay(2000);
+        // this.jsPsych.finishTrial(trial_data);
       } else if (!selectedOption) {
         errorMessage.style.display = "block";
         incorrectMessage.style.display = "none";

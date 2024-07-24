@@ -138,7 +138,7 @@ export const BLOCK_INSTRUCTIONS = {
 
 // Constants for instructions that show up during switching trials types
 export const SWITCHING_INSTRUCTIONS = {
-  BASELINE:
+  NORMAL:
     "In the next trial, you will give real estimate BUT A HIGH TRIAL (NEED TO BE CHANGED).",
   IMAGERY:
     "In the next trial, you will imagine giving estimate to the ESTIMATOR IN A HIGH TRIAL (NEED TO BE CHANGED).",

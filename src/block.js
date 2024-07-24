@@ -49,7 +49,7 @@ export const createBreakConditionBlockSuit = (
   instruction_trial,
   block_trial_type,
   timeline,
-  n = 5 // would always be 5, and the serial num trial count down would be start from 105
+  n = 5 // should always be 5, and the serial num trial count down would be start from 105
 ) => {
   if (n < 3) {
     throw new Error("n should be larger than 3");
@@ -80,7 +80,7 @@ export const createBreakConditionBlockSuit = (
 
   const baseline_instruction_trial = {
     ...instruction_trial,
-    stimulus: `<p style='font-size: 20px'>${SWITCHING_INSTRUCTIONS[BASELINE]}</p>${CONTINUE_PROMT_HTML}`,
+    stimulus: `<p style='font-size: 20px'>${SWITCHING_INSTRUCTIONS['NORMAL']}</p>${CONTINUE_PROMT_HTML}`,
   };
 
   const break_instruction_trial = {
@@ -159,7 +159,7 @@ export const createMentalImageryConditionBlockSuit = (
 
   const baseline_instruction_trial = {
     ...instruction_trial,
-    stimulus: `<p style='font-size: 20px'>${SWITCHING_INSTRUCTIONS[BASELINE]}</p>${CONTINUE_PROMT_HTML}`,
+    stimulus: `<p style='font-size: 20px'>${SWITCHING_INSTRUCTIONS['NORMAL']}</p>${CONTINUE_PROMT_HTML}`,
   };
 
   const imagery_instruction_trial = {
