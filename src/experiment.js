@@ -21,6 +21,7 @@ import { initJsPsych } from "jspsych";
 import DishonestyPlugin from "./plugins/dishonesty";
 import SpinningWheelPlugin from "./plugins/wheel";
 import DisplayTextPlugin from "./plugins/display-text";
+import InstructionPlugin from "./plugins/instruction";
 import CountDownPlugin from "./plugins/countdown";
 import {
   BASELINE,
@@ -41,7 +42,6 @@ import {
 // firebase
 import { initializeApp } from "firebase/app";
 import { getFirestore, setDoc, doc, getDoc } from "firebase/firestore";
-import InstructionPlugin from "./plugins/instruction";
 import QuizPlugin from "./plugins/quiz";
 
 /**
@@ -131,6 +131,7 @@ export async function run({
   //   fullscreen_mode: true,
   // });
 
+  // base trial objects
   const countdown_trial = {
     type: CountDownPlugin,
   };
@@ -151,6 +152,10 @@ export async function run({
     type: QuizPlugin,
   }
 
+
+  /**
+   * THE INSTRUCTION FOR NOW...
+   */
   // Instructions before the Role allocation
   GENERAL_INSTRUCTIONS.slice(0, 4).forEach((instruction_arr) => {
     timeline.push({
@@ -172,38 +177,9 @@ export async function run({
     });
   });
 
-
-  // createBaseLineConditionBlockSuit(
-  //   dishonesty_trial,
-  //   display_text_trial,
-  //   BASELINE,
-  //   timeline
-  // );
-
-  // createMentalImageryConditionBlockSuit(
-  //   dishonesty_trial,
-  //   display_text_trial,
-  //   instruction_trial,
-  //   IMAGERY,
-  //   timeline
-  // );
-
-  // createBreakConditionBlockSuit(
-  //   dishonesty_trial,
-  //   display_text_trial,
-  //   countdown_trial,
-  //   instruction_trial,
-  //   BREAK,
-  //   timeline
-  // );
-
-  // timeline.push({
-  //   ...quiz_trial,
-  //   question: PRACTICE_QUIZ[BASELINE]['QUESTION'],
-  //   options: PRACTICE_QUIZ[BASELINE]['OPTIONS'],
-  //   correct_option_idx: PRACTICE_QUIZ[BASELINE]['CORRECT_IDX'],
-  // });
-
+   /**
+   * Main experiment
+   */
   createMultipleBlock(
     instruction_trial,
     BLOCK_INSTRUCTIONS,

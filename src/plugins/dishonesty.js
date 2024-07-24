@@ -1,5 +1,5 @@
 import { ParameterType } from "jspsych";
-import { ACCURATE, BASELINE, BREAK, IMAGERY, JARS_IMG_NAMES } from "../constants";
+import { ACCURATE, BASELINE, BREAK, FIXATION_CROSS_DURATION, FIXATION_CROSS_HTML, IMAGERY, JARS_IMG_NAMES } from "../constants";
 
 const info = {
   name: "dishonesty-plugin",
@@ -183,6 +183,11 @@ class DishonestyPlugin {
     }
 
     await this.delay(trial.response_duration);
+
+    if (trial.condition === IMAGERY) {
+      display_element.innerHTML = FIXATION_CROSS_HTML;
+      await this.delay(FIXATION_CROSS_DURATION);
+    }
 
     this.endTrial(trial_data);
   }

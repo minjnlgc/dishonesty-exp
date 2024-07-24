@@ -185,7 +185,6 @@ export const createMentalImageryConditionBlockSuit = (
       }
     } else {
       timeline.push(new_dishonesty_trial);
-      timeline.push(text_display_trial);
     }
   }
 };
@@ -257,12 +256,14 @@ export const createMultipleBlock = (
 
     console.log(quiz_dict[condition]);
 
-    timeline.push({
+    const new_quiz_tiral = {
       ...quiz_trial,
       question: quiz_dict[condition]["QUESTION"],
       options: quiz_dict[condition]["OPTIONS"],
       correct_option_idx: quiz_dict[condition]["CORRECT_IDX"],
-    });
+    };
+
+    timeline.push(new_quiz_tiral);
 
     switch (condition) {
       case BASELINE:
