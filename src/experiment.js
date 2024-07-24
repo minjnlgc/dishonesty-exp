@@ -152,7 +152,6 @@ export async function run({
     type: QuizPlugin,
   }
 
-
   /**
    * THE INSTRUCTION FOR NOW...
    */
@@ -192,7 +191,7 @@ export async function run({
     timeline
   );
 
-  //Ending information, saved the data and redirect the users.
+  // Ending information, saved the data and redirect the users.
   timeline.push({
     type: HtmlKeyboardResponsePlugin,
     stimulus: `
@@ -210,5 +209,5 @@ export async function run({
 
   // Return the jsPsych instance so jsPsych Builder can access the experiment results (remove this
   // if you handle results yourself, be it here or in `on_finish()`)
-  return jsPsych;
+  return jsPsych; // comment this out if dont want showing data on the screen
 }
