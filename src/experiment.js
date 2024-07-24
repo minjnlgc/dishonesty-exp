@@ -21,17 +21,28 @@ import { initJsPsych } from "jspsych";
 import DishonestyPlugin from "./plugins/dishonesty";
 import SpinningWheelPlugin from "./plugins/wheel";
 import DisplayTextPlugin from "./plugins/display-text";
-import SerialNumberPlugin from "./plugins/serial-num";
-import { BLOCK_INSTRUCTIONS, BREAK, CONDITION_ARR, IMAGERY } from "./constants";
+import CountDownPlugin from "./plugins/countdown";
+import {
+  BASELINE,
+  BLOCK_INSTRUCTIONS,
+  BREAK,
+  CONDITION_ARR,
+  GENERAL_INSTRUCTIONS,
+  IMAGERY,
+  PRACTICE_QUIZ,
+} from "./constants";
 import {
   createBreakConditionBlockSuit,
   createMentalImageryConditionBlockSuit,
   createMultipleBlock,
+  createBaseLineConditionBlockSuit
 } from "./block";
 
 // firebase
 import { initializeApp } from "firebase/app";
 import { getFirestore, setDoc, doc, getDoc } from "firebase/firestore";
+import InstructionPlugin from "./plugins/instruction";
+import QuizPlugin from "./plugins/quiz";
 
 /**
  * This function will be executed by jsPsych Builder and is expected to run the jsPsych experiment
@@ -120,8 +131,8 @@ export async function run({
   //   fullscreen_mode: true,
   // });
 
-  const serial_num_trial = {
-    type: SerialNumberPlugin,
+  const countdown_trial = {
+    type: CountDownPlugin,
   };
 
   const dishonesty_trial = {
@@ -136,49 +147,88 @@ export async function run({
     type: HtmlKeyboardResponsePlugin,
   };
 
-  // show the spinning wheel
+  const quiz_trial = {
+    type: QuizPlugin,
+  }
+
+  // Instructions before the Role allocation
+  GENERAL_INSTRUCTIONS.slice(0, 4).forEach((instruction_arr) => {
+    timeline.push({
+      type: InstructionPlugin,
+      instruction_arr: instruction_arr,
+    });
+  });
+
+  // Role allocation: show the spinning wheel
   timeline.push({
     type: SpinningWheelPlugin,
   });
 
-  createMultipleBlock(
-    instruction_trial,
-    BLOCK_INSTRUCTIONS,
-    dishonesty_trial,
-    display_text_trial,
-    serial_num_trial,
-    CONDITION_ARR,
-    timeline
-  );
+  // Instructions after the Role allocation
+  GENERAL_INSTRUCTIONS.slice(4).forEach((instruction_arr) => {
+    timeline.push({
+      type: InstructionPlugin,
+      instruction_arr: instruction_arr,
+    });
+  });
+
+
+  // createBaseLineConditionBlockSuit(
+  //   dishonesty_trial,
+  //   display_text_trial,
+  //   BASELINE,
+  //   timeline
+  // );
 
   // createMentalImageryConditionBlockSuit(
   //   dishonesty_trial,
   //   display_text_trial,
+  //   instruction_trial,
   //   IMAGERY,
   //   timeline
-  // )
+  // );
 
   // createBreakConditionBlockSuit(
   //   dishonesty_trial,
   //   display_text_trial,
-  //   serial_num_trial,
+  //   countdown_trial,
+  //   instruction_trial,
   //   BREAK,
   //   timeline
   // );
 
-  // Ending information, saved the data and redirect the users.
   // timeline.push({
-  //   type: HtmlKeyboardResponsePlugin,
-  //   stimulus: `
-  //     <p style='font-size: 20px'>This is the end of the experiment!</p>
-  //     <p style='font-size: 20px'>Thank you so much!</p>
-  //     <p style='font-size: 16px'>Press any key to complete your submission on prolific.</p>
-  //   `,
-  //   on_finish: async () => {
-  //     await saveSubjectData(subject_id, jsPsych.data.get());
-  //     window.location = process.env.PROLIFIC_REDIRECT_URL || "https://app.prolific.com/";
-  //   },
+  //   ...quiz_trial,
+  //   question: PRACTICE_QUIZ[BASELINE]['QUESTION'],
+  //   options: PRACTICE_QUIZ[BASELINE]['OPTIONS'],
+  //   correct_option_idx: PRACTICE_QUIZ[BASELINE]['CORRECT_IDX'],
   // });
+
+  createMultipleBlock(
+    instruction_trial,
+    BLOCK_INSTRUCTIONS,
+    quiz_trial,
+    dishonesty_trial,
+    display_text_trial,
+    countdown_trial,
+    CONDITION_ARR,
+    PRACTICE_QUIZ,
+    timeline
+  );
+
+  //Ending information, saved the data and redirect the users.
+  timeline.push({
+    type: HtmlKeyboardResponsePlugin,
+    stimulus: `
+      <p style='font-size: 20px'>This is the end of the experiment!</p>
+      <p style='font-size: 20px'>Thank you so much!</p>
+      <p style='font-size: 16px'>Press any key to complete your submission on prolific.</p>
+    `,
+    // on_finish: async () => {
+    //   await saveSubjectData(subject_id, jsPsych.data.get());
+    //   window.location = process.env.PROLIFIC_REDIRECT_URL || "https://app.prolific.com/";
+    // },
+  });
 
   await jsPsych.run(timeline);
 

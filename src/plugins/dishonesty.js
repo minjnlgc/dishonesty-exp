@@ -1,5 +1,5 @@
 import { ParameterType } from "jspsych";
-import { BASELINE, FIXATION_CROSS_DURATION, FIXATION_CROSS_HTML, IMAGERY, JARS_IMG_NAMES } from "../constants";
+import { ACCURATE, BASELINE, BREAK, IMAGERY, JARS_IMG_NAMES } from "../constants";
 
 const info = {
   name: "dishonesty-plugin",
@@ -54,12 +54,31 @@ const info = {
     },
     block_type: {
       type: ParameterType.STRING,
-      default: null
+      default: null,
+    },
+    dishonesty_stimulus_arr: {
+      type: ParameterType.OBJECT,
+      default: JARS_IMG_NAMES,
+    },
+    base_trials_stimulus_in_high_condition_arr: {
+      type: ParameterType.OBJECT,
+      default: null,
+    },
+    high_trials_stimulus_in_high_condition_arr: {
+      type: ParameterType.OBJECT,
+      default: null,
+    },
+    estimate_type: {
+      type: ParameterType.STRING,
+      default: ACCURATE
     }
   },
 };
 
 const jar_image_history = new Set(); // create a dictionary to store how many times each stimulus occur
+
+const high_condition_jar_image_history = new Set(); // max should be 15 - 3;
+const high_condition_base_jar_image_history = new Set(); // max should be 3;
 
 class DishonestyPlugin {
   constructor(jsPsych) {
@@ -76,24 +95,44 @@ class DishonestyPlugin {
       rt: trial.rt,
       stimulus: trial.stimulus,
       block_number: trial.block_number,
-      block_type: trial.block_type
+      block_type: trial.block_type,
+      //dishonesty_stimulus_arr: trial.dishonesty_stimulus_arr,
+      base_trials_stimulus_in_high_condition_arr:
+        trial.base_trials_stimulus_in_high_condition_arr,
+      high_trials_stimulus_in_high_condition_arr:
+        trial.high_trials_stimulus_in_high_condition_arr,
     };
 
-    if (jar_image_history.size === 30) {
+    if (jar_image_history.size === 15) {
       jar_image_history.clear();
     }
+    if (high_condition_jar_image_history.size === 12) {
+      high_condition_jar_image_history.clear();
+    }
+    if (high_condition_base_jar_image_history.size === 3) {
+      high_condition_jar_image_history.clear();
+    }
+
+    const jar_images_arr = this.switchStimuliSet(trial);
+    const jar_images_history_set = this.switchHistorySet(trial);
+
+    console.log(jar_images_arr);
+
     let jar_image_id;
     do {
       jar_image_id =
-        JARS_IMG_NAMES[
-          this.jsPsych.randomization.randomInt(0, JARS_IMG_NAMES.length - 1)
+        jar_images_arr[
+          this.jsPsych.randomization.randomInt(0, jar_images_arr.length - 1)
         ];
-    } while (jar_image_history.has(jar_image_history));
+    } while (jar_images_history_set.has(jar_image_id));
 
-    jar_image_history.add(jar_image_id);
+    jar_images_history_set.add(jar_image_id);
     trial_data.stimulus = jar_image_id;
 
-    console.log(jar_image_history);
+    console.log(
+      `${trial.condition} history, is baseline ${trial.is_baseline}:`,
+      jar_images_history_set
+    );
 
     const img_html = `<div>
             <img src='../../assets/images/jars/${jar_image_id}'style='max-width: ${trial.image_size_percentage}%; height: auto' />
@@ -113,10 +152,10 @@ class DishonestyPlugin {
         `;
 
     // prompt for mental imagery condition
-    const enter_advice_mental_imagery_HTML = ` <h2>Please imaging that your are ... (need to change) </h2>`;
+    const enter_advice_mental_imagery_HTML = ` <h2>Please imaging that your are ... (NEED TO BE CHANGED) </h2>`;
 
     const enter_advice_html =
-      (trial.condition === IMAGERY) && !trial.is_baseline
+      trial.condition === IMAGERY && !trial.is_baseline
         ? enter_advice_mental_imagery_HTML
         : enter_advice_baseline_html;
 
@@ -127,7 +166,7 @@ class DishonestyPlugin {
 
     display_element.innerHTML = enter_advice_html;
 
-    if (trial.is_baseline) {
+    if (trial.is_baseline || (!trial.is_baseline && trial.condition === BREAK)) {
       display_element
         .querySelector("#response-btn")
         .addEventListener("click", async () => {
@@ -144,9 +183,6 @@ class DishonestyPlugin {
     }
 
     await this.delay(trial.response_duration);
-
-    display_element.innerHTML = FIXATION_CROSS_HTML;
-    await this.delay(FIXATION_CROSS_DURATION);
 
     this.endTrial(trial_data);
   }
@@ -176,10 +212,6 @@ class DishonestyPlugin {
       display_element.querySelector("#response").value = null;
       trial_data.response = response;
       console.log(trial_data);
-      
-      display_element.innerHTML = FIXATION_CROSS_HTML;
-      await this.delay(FIXATION_CROSS_DURATION);
-
       this.endTrial(trial_data);
     }
   }
@@ -187,6 +219,46 @@ class DishonestyPlugin {
   endTrial(trial_data) {
     this.jsPsych.pluginAPI.clearAllTimeouts();
     this.jsPsych.finishTrial(trial_data);
+  }
+
+  switchStimuliSet(trial) {
+    if (trial.condition === BASELINE && trial.is_baseline) {
+      return trial.dishonesty_stimulus_arr;
+    } else if (
+      (trial.condition === BREAK || trial.condition === IMAGERY) &&
+      trial.is_baseline
+    ) {
+      return trial.base_trials_stimulus_in_high_condition_arr;
+    } else if (
+      (trial.condition === BREAK || trial.condition === IMAGERY) &&
+      !trial.is_baseline
+    ) {
+      return trial.high_trials_stimulus_in_high_condition_arr;
+    } else {
+      throw new Error(
+        `Invalid combination of condition: '${trial.condition}' and is_baseline: '${trial.is_baseline}'.`
+      );
+    }
+  }
+
+  switchHistorySet(trial) {
+    if (trial.condition === BASELINE && trial.is_baseline) {
+      return jar_image_history;
+    } else if (
+      (trial.condition === BREAK || trial.condition === IMAGERY) &&
+      trial.is_baseline
+    ) {
+      return high_condition_base_jar_image_history;
+    } else if (
+      (trial.condition === BREAK || trial.condition === IMAGERY) &&
+      !trial.is_baseline
+    ) {
+      return high_condition_jar_image_history;
+    } else {
+      throw new Error(
+        `Invalid combination of condition: '${trial.condition}' and is_baseline: '${trial.is_baseline}'.`
+      );
+    }
   }
 }
 
