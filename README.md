@@ -74,9 +74,7 @@ To run the experiment on your local machine:
     - Press `q` to quit and return to the command line.
 
 ---
-Sure, here’s an improved version of the README section:
 
----
 ### Integrating with Firebase and Prolific
 
 To integrate your project with Firebase and Prolific, follow these steps:
@@ -115,7 +113,3 @@ To integrate your project with Firebase and Prolific, follow these steps:
    - Replace `your_api_key`, `your_auth_domain`, `your_project_id`, `your_storage_bucket`, `your_messaging_sender_id`, `your_app_id`, and `your_prolific_redirect_url` with your actual Firebase and Prolific configuration details.
 
 By following these steps, you will successfully integrate Firebase and Prolific with your project.
-
----
-
-This version provides a clearer and more detailed set of instructions, ensuring that users understand each step of the process.
