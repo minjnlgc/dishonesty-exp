@@ -72,3 +72,50 @@ To run the experiment on your local machine:
     - Press `Enter` to scroll down one line at a time.
     - Press `Space` to scroll down one page at a time.
     - Press `q` to quit and return to the command line.
+
+---
+Sure, here’s an improved version of the README section:
+
+---
+### Integrating with Firebase and Prolific
+
+To integrate your project with Firebase and Prolific, follow these steps:
+
+1. **Initialize Firebase**:
+   - Run the following command in your terminal to initialize Firebase:
+     ```bash
+     firebase init
+     ```
+   - During the setup, only select `hosting` (the option that mentions GitHub Action as optional) and `firestore`.
+
+2. **Set the Public Directory**:
+   - When prompted, set the public directory to:
+     ```bash
+     packaged/experiment
+     ```
+   - If you dont have these directory, you could run the shell script: `./build_and_extract.sh` (in windows you can use git bash).  
+
+3. **Create the .env File**:
+   - In the root directory of your project, create a file named `.env`.
+   - Add the following content to the `.env` file:
+     ```bash
+     # Firebase Configuration
+     API_KEY=your_api_key
+     AUTH_DOMAIN=your_auth_domain
+     PROJECT_ID=your_project_id
+     STORAGE_BUCKET=your_storage_bucket
+     MESSAGING_SENDER_ID=your_messaging_sender_id
+     APP_ID=your_app_id
+
+     # Prolific
+     PROLIFIC_REDIRECT_URL=your_prolific_redirect_url
+     ```
+
+4. **Replace Placeholder Values**:
+   - Replace `your_api_key`, `your_auth_domain`, `your_project_id`, `your_storage_bucket`, `your_messaging_sender_id`, `your_app_id`, and `your_prolific_redirect_url` with your actual Firebase and Prolific configuration details.
+
+By following these steps, you will successfully integrate Firebase and Prolific with your project.
+
+---
+
+This version provides a clearer and more detailed set of instructions, ensuring that users understand each step of the process.
