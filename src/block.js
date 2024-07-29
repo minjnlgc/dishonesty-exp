@@ -132,7 +132,7 @@ export const createMentalImageryConditionBlockSuit = (
   instruction_trial,
   block_trial_type,
   timeline,
-  n = 15 // should change to 15 later
+  n = 5 // should change to 15 later
 ) => {
   if (n < 3) {
     throw new Error("n should be larger than 3");
@@ -204,7 +204,7 @@ export const createBaseLineConditionBlockSuit = (
   text_display_trial,
   block_trial_type,
   timeline,
-  n = 15 // should change to 15 later
+  n = 5 // should change to 15 later
 ) => {
   const base_dishonesty_trial = {
     ...dishonesty_trial,
@@ -258,9 +258,7 @@ export const createMultipleBlock = (
 
     const new_quiz_tiral = {
       ...quiz_trial,
-      question: quiz_dict[condition]["QUESTION"],
-      options: quiz_dict[condition]["OPTIONS"],
-      correct_option_idx: quiz_dict[condition]["CORRECT_IDX"],
+      question_list: quiz_dict[condition]
     };
 
     timeline.push(new_quiz_tiral);

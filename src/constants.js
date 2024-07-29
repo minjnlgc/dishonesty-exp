@@ -61,9 +61,9 @@ export const JARS_IMG_NAMES = [
   "30.16.JPG",
   "30.98.JPG",
   "31.50.JPG",
-  "5.23.jpg",
-  "6.28.jpg",
-  "7.31.jpg",
+  // "5.23.jpg",
+  // "6.28.jpg",
+  // "7.31.jpg",
 ];
 
 export const EXAMPLE_JAR_IMG_NAMES = "18.96.JPG";
@@ -158,40 +158,71 @@ export const RECAP_INSTRUCTION = {
 };
 
 // Constants for quizzes
-export const QUIZ_OPTIONS = [
-  "I would receive a higher reward because £5 is higher above the true value (an overestimate). The estimator would receive a lower reward because £5 is less accurate to the true value.",
-  "I would receive a lower reward because £5 is less accurate to the true value. The estimator would receive a higher reward because £5 is higher above the true value (an overestimate). ",
-  "Both myself, and the estimator would receive a lower reward because £5 is less accurate to the true value.",
-  "Both myself, and the estimator would receive a higher reward because £5 is higher above the true value (an overestimate).",
+export const QUIZ_QUESTION_1 = "What is the range of money in the jars?";
+export const QUIZ_OPTIONS_1 = ["10-20", "10-50", "15-30"];
+
+export const QUIZ_QUESTION_2 =
+  "Based on the instructions you just read, in which of the below will you be rewarded more money?";
+export const QUIZ_OPTIONS_2 = [
+  "The jar’s value is £30.00 and the estimator submits an estimate of £35.00.",
+  "The jar’s value is £30.00 and the estimator submits an estimate of £30.00.",
+  "The jar’s value is £30.00 and the estimator submits an estimate of £32.00.",
 ];
 
-export const QUIZ_QUESTION =
-  "If the estimator submits an estimate within £5 of the true value, how would you be rewarded?";
-
-export const QUIZ_OPTIONS_HIGH_TWO = [
-  "I would receive a higher reward because £8 is higher above the true value (an overestimate). The estimator would receive a lower reward because £8 is less accurate to the true value.",
-  "I would receive a lower reward because £8 is less accurate to the true value. The estimator would receive a higher reward because £8 is higher above the true value (an overestimate). ",
-  "Both myself, and the estimator would receive a lower reward because £8 is less accurate to the true value.",
-  "Both myself, and the estimator would receive a higher reward because £8 is higher above the true value (an overestimate).",
-];
-
-export const QUIZ_QUESTION_HIGH_TWO =
-  "If the estimator submits an estimate within £8 of the true value, how would you be rewarded?";
+export const QUIZ_QUESTION_3 =
+  "Based on the instructions you just read, in which of the below will the estimator be rewarded more money?";
+export const QUIZ_OPTIONS_3 = QUIZ_OPTIONS_2;
 
 export const PRACTICE_QUIZ = {
-  BASELINE: {
-    QUESTION: QUIZ_QUESTION,
-    OPTIONS: QUIZ_OPTIONS,
-    CORRECT_IDX: 2,
-  },
-  IMAGERY: {
-    QUESTION: QUIZ_QUESTION,
-    OPTIONS: QUIZ_OPTIONS,
-    CORRECT_IDX: 0,
-  },
-  BREAK: {
-    QUESTION: QUIZ_QUESTION_HIGH_TWO,
-    OPTIONS: QUIZ_OPTIONS_HIGH_TWO,
-    CORRECT_IDX: 0,
-  },
+  BASELINE: [
+    {
+      QUESTION: QUIZ_QUESTION_1,
+      OPTIONS: QUIZ_OPTIONS_1,
+      CORRECT_IDX: 2, // the first index is 0
+    },
+    {
+      QUESTION: QUIZ_QUESTION_2,
+      OPTIONS: QUIZ_OPTIONS_2,
+      CORRECT_IDX: 2,
+    },
+    {
+      QUESTION: QUIZ_QUESTION_3,
+      OPTIONS: QUIZ_OPTIONS_3,
+      CORRECT_IDX: 2,
+    },
+  ],
+  IMAGERY: [
+    {
+      QUESTION: QUIZ_QUESTION_1,
+      OPTIONS: QUIZ_OPTIONS_1,
+      CORRECT_IDX: 2,
+    },
+    {
+      QUESTION: QUIZ_QUESTION_2,
+      OPTIONS: QUIZ_OPTIONS_2,
+      CORRECT_IDX: 2,
+    },
+    {
+      QUESTION: QUIZ_QUESTION_3,
+      OPTIONS: QUIZ_OPTIONS_3,
+      CORRECT_IDX: 2,
+    },
+  ],
+  BREAK: [
+    {
+      QUESTION: QUIZ_QUESTION_1,
+      OPTIONS: QUIZ_OPTIONS_1,
+      CORRECT_IDX: 2,
+    },
+    {
+      QUESTION: QUIZ_QUESTION_2,
+      OPTIONS: QUIZ_OPTIONS_2,
+      CORRECT_IDX: 2,
+    },
+    {
+      QUESTION: QUIZ_QUESTION_3,
+      OPTIONS: QUIZ_OPTIONS_3,
+      CORRECT_IDX: 2,
+    },
+  ],
 };

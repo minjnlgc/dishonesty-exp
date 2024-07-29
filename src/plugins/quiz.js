@@ -7,21 +7,13 @@ const info = {
       type: ParameterType.INT,
       default: null,
     },
-    rt: {
-      type: ParameterType.INT,
-      default: null,
-    },
-    question: {
-      type: ParameterType.STRING,
-      default: "",
-    },
-    options: {
+    question_list: {
       type: ParameterType.OBJECT,
       default: [],
     },
-    correct_option_idx: {
-      type: ParameterType.INT,
-      default: null,
+    recap_instruction_content: {
+      type: ParameterType.STRING,
+      default: "Here are the recap of the instruction",
     },
   },
 };
@@ -33,79 +25,105 @@ class QuizPlugin {
 
   async trial(display_element, trial) {
     const trial_data = {
-        block_number: trial.block_number,
-        rt: null,
-        selected_option: null,
-        correct: null,
-        incorrect_count: 0
-      };
+      block_number: trial.block_number,
+      rt: null,
+      responses: {
+        Q1: 0,
+        Q2: 0,
+        Q3: 0,
+      },
+      incorrect_count: {
+        Q1: 0,
+        Q2: 0,
+        Q3: 0,
+      },
+      attempts: 0,
+    };
 
-    const options_HTML = trial.options.reduce((acc, e, i) => {
-      acc += `
-        <div style="margin-bottom: 25px;">
-          <input type="radio" id="option${i}" name="options" value="${i}" style="width: 17px; height: 17px">
-          <label for="option${i}">${e}</label>
-        </div>`;
-      return acc;
-    }, "");
-
-    display_element.innerHTML = `
-      <div id='quiz-container' style='text-align: left; font-size: 20px; margin: 30px;'>
-        <h4>${trial.question}</h4>
-        ${options_HTML}
-        <div id="error-message" style="color: red; display: none;">* Please select an option</div>
-        <div id="incorrect-message" style="color: red; display: none;">* The answer is incorrect</div>
-        <center><button id="submit-button" style="margin-top: 20px; font-size: 16px;" class='jspsych-btn'>Submit</button></center>
-      </div>
-    `;
-
-    const submitButton = display_element.querySelector("#submit-button");
-    const errorMessage = display_element.querySelector("#error-message");
-    const incorrectMessage =
-      display_element.querySelector("#incorrect-message");
     const startTime = performance.now();
+    console.log(trial.question_list);
 
-    submitButton.addEventListener("click", async () => {
-      const selectedOption = display_element.querySelector(
-        'input[name="options"]:checked'
-      );
+    const quiz_html = trial.question_list
+      .map((quiz_obj, i) => this.createOneQuiz(quiz_obj, i))
+      .join("");
 
-      console.log(parseInt(selectedOption.value));
-      //console.log(trial.correct_option_idx);
+    const content = `
+    <div id='quiz-container' style='text-align: left; font-size: 20px; margin: 30px; height: 100vh; padding-top: 20px'>
+      <button id='recap-button' class='jspsych-btn' style='margin-top: 20px; background-color: #00aedb; color: white; font-size: 20px'>Click here to show the recap of the instructions</button>
+      <div id='recap-instruction' style='display: none; margin-top: 10px;'>${trial.recap_instruction_content}</div>
+      ${quiz_html}  
+      <center><button id="submit-button" style="margin-top: 20px; font-size: 16px;" class='jspsych-btn'>Submit</button></center>
+    </div>
+    `;
+    display_element.innerHTML = content;
 
-      if (
-        selectedOption !== null &&
-        parseInt(selectedOption.value) === trial.correct_option_idx
-      ) {
-        const endTime = performance.now();
-        const rt = endTime - startTime;
+    console.log(trial_data.incorrect_count);
 
-        trial_data.rt = rt;
-        trial_data.selected_option = parseInt(selectedOption.value);
-        trial_data.correct = parseInt(selectedOption.value) === trial.correct_option_idx;
+    display_element
+      .querySelector("#recap-button")
+      .addEventListener("click", () => {
+        const recap_instruction =
+          display_element.querySelector("#recap-instruction");
 
-        this.jsPsych.finishTrial(trial_data);
-      } else if (
-        selectedOption !== null &&
-        parseInt(selectedOption.value) !== trial.correct_option_idx
-      ) {
-        incorrectMessage.style.display = "block";
-        errorMessage.style.display = "none";
+        if (recap_instruction.style.display == "block") {
+          recap_instruction.style.display = "none";
+        } else {
+          recap_instruction.style.display = "block";
+        }
+      });
 
-        trial_data.incorrect_count += 1;
-        
-        // const endTime = performance.now();
-        // const rt = endTime - startTime;
+    const submit_button = display_element.querySelector("#submit-button");
+    submit_button.addEventListener("click", () => {
+      trial_data.attempts += 1;
+      const is_correct = trial.question_list.map((quiz_obj, quiz_index) => {
+        const selected_option = display_element.querySelector(
+          `input[name="question${quiz_index}"]:checked`
+        );
+        const error_message = display_element.querySelector(
+          `#error-message-${quiz_index}`
+        );
+        const incorrect_message = display_element.querySelector(
+          `#incorrect-message-${quiz_index}`
+        );
 
-        // trial_data.rt = rt;
-        // trial_data.selected_option = parseInt(selectedOption.value);
-        // trial_data.correct = parseInt(selectedOption.value) === trial.correct_option_idx;
-        
-        // await this.delay(2000);
-        // this.jsPsych.finishTrial(trial_data);
-      } else if (!selectedOption) {
-        errorMessage.style.display = "block";
-        incorrectMessage.style.display = "none";
+        if (
+          selected_option != null &&
+          parseInt(selected_option.value) === quiz_obj.CORRECT_IDX
+        ) {
+          console.log("non null and correct");
+          error_message.style.display = "none";
+          incorrect_message.style.display = "none";
+
+          trial_data.rt = performance.now() - startTime;
+          trial_data.responses[`Q${quiz_index + 1}`] = parseInt(
+            selected_option.value
+          );
+
+          return true;
+        } else if (
+          selected_option != null &&
+          parseInt(selected_option.value) !== quiz_obj.CORRECT_IDX
+        ) {
+          console.log("wrong answer");
+          error_message.style.display = "none";
+          incorrect_message.style.display = "block";
+
+          trial_data.incorrect_count[`Q${quiz_index + 1}`] += 1;
+
+          return false;
+        } else {
+          error_message.style.display = "block";
+          incorrect_message.style.display = "none";
+
+          return false;
+        }
+      });
+
+      const is_all_correct = is_correct.every((e) => e);
+      console.log(is_all_correct);
+
+      if (is_all_correct) {
+        this.endTrial(trial_data);
       }
     });
   }
@@ -114,6 +132,32 @@ class QuizPlugin {
     return new Promise((resolve) =>
       this.jsPsych.pluginAPI.setTimeout(resolve, ms)
     );
+  }
+
+  endTrial(trial_data) {
+    this.jsPsych.pluginAPI.clearAllTimeouts();
+    this.jsPsych.finishTrial(trial_data);
+  }
+
+  createOneQuiz(quiz_object, quiz_index) {
+    const options_HTML = quiz_object["OPTIONS"].reduce(
+      (acc, e, option_index) => {
+        acc += `<div style="margin-bottom: 25px;">
+          <input type="radio" id="option${quiz_index}_${option_index}" name="question${quiz_index}" value="${option_index}" style="width: 17px; height: 17px">
+          <label for="option${quiz_index}_${option_index}">${e}</label>
+        </div>`;
+        return acc;
+      },
+      ""
+    );
+
+    return `<div>
+      <h4>Question ${quiz_index + 1}: ${
+      quiz_object["QUESTION"]
+    }</h4>${options_HTML}
+      <div id="error-message-${quiz_index}" style="color: red; display: none;">* Please select an option</div>
+      <div id="incorrect-message-${quiz_index}" style="color: red; display: none;">* The answer is incorrect</div>
+    </div>`;
   }
 }
 

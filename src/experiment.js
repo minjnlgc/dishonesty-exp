@@ -155,26 +155,26 @@ export async function run({
   /**
    * THE INSTRUCTION FOR NOW...
    */
-  // Instructions before the Role allocation
-  GENERAL_INSTRUCTIONS.slice(0, 4).forEach((instruction_arr) => {
-    timeline.push({
-      type: InstructionPlugin,
-      instruction_arr: instruction_arr,
-    });
-  });
+  // // Instructions before the Role allocation
+  // GENERAL_INSTRUCTIONS.slice(0, 4).forEach((instruction_arr) => {
+  //   timeline.push({
+  //     type: InstructionPlugin,
+  //     instruction_arr: instruction_arr,
+  //   });
+  // });
 
-  // Role allocation: show the spinning wheel
-  timeline.push({
-    type: SpinningWheelPlugin,
-  });
+  // // Role allocation: show the spinning wheel
+  // timeline.push({
+  //   type: SpinningWheelPlugin,
+  // });
 
-  // Instructions after the Role allocation
-  GENERAL_INSTRUCTIONS.slice(4).forEach((instruction_arr) => {
-    timeline.push({
-      type: InstructionPlugin,
-      instruction_arr: instruction_arr,
-    });
-  });
+  // // Instructions after the Role allocation
+  // GENERAL_INSTRUCTIONS.slice(4).forEach((instruction_arr) => {
+  //   timeline.push({
+  //     type: InstructionPlugin,
+  //     instruction_arr: instruction_arr,
+  //   });
+  // });
 
    /**
    * Main experiment

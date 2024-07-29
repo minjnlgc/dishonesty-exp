@@ -1,5 +1,13 @@
 import { ParameterType } from "jspsych";
-import { ACCURATE, BASELINE, BREAK, FIXATION_CROSS_DURATION, FIXATION_CROSS_HTML, IMAGERY, JARS_IMG_NAMES } from "../constants";
+import {
+  ACCURATE,
+  BASELINE,
+  BREAK,
+  FIXATION_CROSS_DURATION,
+  FIXATION_CROSS_HTML,
+  IMAGERY,
+  JARS_IMG_NAMES,
+} from "../constants";
 
 const info = {
   name: "dishonesty-plugin",
@@ -70,8 +78,8 @@ const info = {
     },
     estimate_type: {
       type: ParameterType.STRING,
-      default: ACCURATE
-    }
+      default: ACCURATE,
+    },
   },
 };
 
@@ -113,10 +121,12 @@ class DishonestyPlugin {
       high_condition_jar_image_history.clear();
     }
 
-    const jar_images_arr = this.switchStimuliSet(trial);
+    const jar_images_arr =
+      this.switchStimuliSet(trial) || trial.dishonesty_stimulus_arr;
     const jar_images_history_set = this.switchHistorySet(trial);
 
     console.log(jar_images_arr);
+    console.log(trial.condition);
 
     let jar_image_id;
     do {
@@ -139,7 +149,9 @@ class DishonestyPlugin {
         </div>`;
 
     // prompt for baseline condition
-    const enter_advice_baseline_html = ` <h2>Enter your advice: </h2>
+    const enter_advice_baseline_html = ` 
+      <h1 id='count-down'></h2>  
+      <h2>Enter your advice: </h2>
         <div style='display: flex; justify-content: center; margin-right: 25px'>
           <label style='font-size: 35px; margin-top: 5px' >£</label> <input type='number' id='response' required
             style='padding: 7px 8px; width: 70%; margin-left: 15px; font-size: 20px; box-sizing: border-box;'
@@ -166,7 +178,10 @@ class DishonestyPlugin {
 
     display_element.innerHTML = enter_advice_html;
 
-    if (trial.is_baseline || (!trial.is_baseline && trial.condition === BREAK)) {
+    if (
+      trial.is_baseline ||
+      (!trial.is_baseline && trial.condition === BREAK)
+    ) {
       display_element
         .querySelector("#response-btn")
         .addEventListener("click", async () => {
@@ -182,7 +197,17 @@ class DishonestyPlugin {
         });
     }
 
-    await this.delay(trial.response_duration);
+    // show the countdown in baseline conditon when entering advice
+    if (trial.is_baseline) {
+      let seconds = trial.response_duration / 1000;
+      while (seconds > 0) {
+        display_element.querySelector("#count-down").innerText = seconds;
+        await this.delay(1000);
+        seconds -= 1;
+      }
+    } else {
+      await this.delay(trial.response_duration);
+    }
 
     if (trial.condition === IMAGERY) {
       display_element.innerHTML = FIXATION_CROSS_HTML;
