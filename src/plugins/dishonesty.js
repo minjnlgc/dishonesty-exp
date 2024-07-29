@@ -30,7 +30,7 @@ const info = {
     },
     response_duration: {
       type: ParameterType.INT,
-      default: 5000, // 5 sec
+      default: 6000, // 6 sec
     },
     image_size_percentage: {
       type: ParameterType.STRING,
@@ -150,7 +150,7 @@ class DishonestyPlugin {
 
     // prompt for baseline condition
     const enter_advice_baseline_html = ` 
-      <h1 id='count-down'></h2>  
+      <h1 id='count-down'></h1>  
       <h2>Enter your advice: </h2>
         <div style='display: flex; justify-content: center; margin-right: 25px'>
           <label style='font-size: 35px; margin-top: 5px' >£</label> <input type='number' id='response' required
@@ -164,7 +164,7 @@ class DishonestyPlugin {
         `;
 
     // prompt for mental imagery condition
-    const enter_advice_mental_imagery_HTML = ` <h2>Please imaging that your are ... (NEED TO BE CHANGED) </h2>`;
+    const enter_advice_mental_imagery_HTML = `<h1 id='count-down'></h1><h2>Please imaging that your are ... (NEED TO BE CHANGED) </h2>`;
 
     const enter_advice_html =
       trial.condition === IMAGERY && !trial.is_baseline
@@ -198,15 +198,11 @@ class DishonestyPlugin {
     }
 
     // show the countdown in baseline conditon when entering advice
-    if (trial.is_baseline) {
-      let seconds = trial.response_duration / 1000;
+    let seconds = trial.response_duration / 1000;
       while (seconds > 0) {
         display_element.querySelector("#count-down").innerText = seconds;
         await this.delay(1000);
         seconds -= 1;
-      }
-    } else {
-      await this.delay(trial.response_duration);
     }
 
     if (trial.condition === IMAGERY) {

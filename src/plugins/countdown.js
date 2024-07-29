@@ -18,7 +18,7 @@ const info = {
     },
     countdown_seconds: {
       type: ParameterType.INT,
-      default: 105
+      default: 80
     }
   },
 };

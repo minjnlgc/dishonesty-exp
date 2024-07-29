@@ -7,6 +7,7 @@ import {
   HIGH,
   IMAGERY,
   JARS_IMG_NAMES,
+  RECAP_INSTRUCTION,
   SWITCHING_INSTRUCTIONS,
 } from "./constants";
 
@@ -258,7 +259,8 @@ export const createMultipleBlock = (
 
     const new_quiz_tiral = {
       ...quiz_trial,
-      question_list: quiz_dict[condition]
+      question_list: quiz_dict[condition],
+      recap_instruction_content: RECAP_INSTRUCTION[condition]
     };
 
     timeline.push(new_quiz_tiral);
