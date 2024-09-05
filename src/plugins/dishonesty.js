@@ -199,10 +199,10 @@ class DishonestyPlugin {
 
     // show the countdown in baseline conditon when entering advice
     let seconds = trial.response_duration / 1000;
-      while (seconds > 0) {
-        display_element.querySelector("#count-down").innerText = seconds;
-        await this.delay(1000);
-        seconds -= 1;
+    while (seconds > 0) {
+      display_element.querySelector("#count-down").innerText = seconds;
+      await this.delay(1000);
+      seconds -= 1;
     }
 
     if (trial.condition === IMAGERY) {

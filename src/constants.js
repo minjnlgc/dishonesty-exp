@@ -183,12 +183,12 @@ export const PRACTICE_QUIZ = {
     {
       QUESTION: QUIZ_QUESTION_2,
       OPTIONS: QUIZ_OPTIONS_2,
-      CORRECT_IDX: 2,
+      CORRECT_IDX: 1,
     },
     {
       QUESTION: QUIZ_QUESTION_3,
       OPTIONS: QUIZ_OPTIONS_3,
-      CORRECT_IDX: 2,
+      CORRECT_IDX: 1,
     },
   ],
   IMAGERY: [
@@ -200,12 +200,12 @@ export const PRACTICE_QUIZ = {
     {
       QUESTION: QUIZ_QUESTION_2,
       OPTIONS: QUIZ_OPTIONS_2,
-      CORRECT_IDX: 2,
+      CORRECT_IDX: 0,
     },
     {
       QUESTION: QUIZ_QUESTION_3,
       OPTIONS: QUIZ_OPTIONS_3,
-      CORRECT_IDX: 2,
+      CORRECT_IDX: 1,
     },
   ],
   BREAK: [
@@ -217,12 +217,12 @@ export const PRACTICE_QUIZ = {
     {
       QUESTION: QUIZ_QUESTION_2,
       OPTIONS: QUIZ_OPTIONS_2,
-      CORRECT_IDX: 2,
+      CORRECT_IDX: 0,
     },
     {
       QUESTION: QUIZ_QUESTION_3,
       OPTIONS: QUIZ_OPTIONS_3,
-      CORRECT_IDX: 2,
+      CORRECT_IDX: 1,
     },
   ],
 };
