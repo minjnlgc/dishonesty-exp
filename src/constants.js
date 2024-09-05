@@ -1,17 +1,18 @@
-// Constants for condition
+// Constants for advice condition
 export const BASELINE = "BASELINE";
-export const IMAGERY = "IMAGERY";
-export const BREAK = "BREAK";
+export const PRIVATE = "PRIVATE";
+export const PUBLIC = "PUBLIC";
 
-export const CONDITION_ARR = [BASELINE, IMAGERY, BREAK];
+export const CONDITIONS = [BASELINE, PRIVATE, PUBLIC];
 
-// Constants for roles
-export const ADVISOR = "ADVISOR";
-export const ESTIMATOR = "ESTIMATOR";
-
-// Constants for estimate types
-export const ACCURATE = "ACCURATE";
-export const HIGH = "HIGH";
+// Constants for different advice of condition
+export const ADVICE_PROMPT = {
+  BASELINE: "No advice to you - The advice shared with other participants",
+  PRIVATE:
+    "Private advice - The advice only shared with you: <br> The jar contains {num} pounds.",
+  PUBLIC:
+    "Public advice - The advice shared with all participants: <br> The jar contains {num} pounds.",
+};
 
 // Constants for fixation cross
 export const FIXATION_CROSS_HTML = `<h1 style='font-size: 60px;'>+</h1>`;
