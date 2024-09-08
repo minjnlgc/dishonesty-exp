@@ -1,0 +1,21 @@
+.envelop {
+  fill: currentColor;
+  margin-right: 40px;
+}
+
+.highlight {
+  transform: scale(1.1);
+  transition: all .2s ease-in-out;
+}
+
+#envelop-private {
+  color: #8a1cef;
+}
+
+#envelop-public {
+  color: #42c0d6;
+}
+
+#envelop-baseline {
+  color: #ee9311;
+}

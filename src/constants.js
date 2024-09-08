@@ -1,5 +1,25 @@
-// Constants for condition
+// Constants for advice condition
 export const BASELINE = "BASELINE";
+export const PRIVATE = "PRIVATE";
+export const PUBLIC = "PUBLIC";
+
+export const CONDITIONS = [BASELINE, PRIVATE, PUBLIC];
+
+// Constants for different advice of condition
+export const ADVICE_PROMPT = {
+  BASELINE: "No advice to you - The advice shared with other participants",
+  PRIVATE:
+    "Private advice - The advice only shared with you: <br> The jar contains {num} pounds.",
+  PUBLIC:
+    "Public advice - The advice shared with all participants: <br> The jar contains {num} pounds.",
+};
+
+// Offset for generating advice 
+export const OFFSET = 2
+
+// For dishonesty old coin experiment
+// Constants for condition
+// export const BASELINE = "BASELINE";
 export const IMAGERY = "IMAGERY";
 export const BREAK = "BREAK";
 

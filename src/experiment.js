@@ -8,8 +8,7 @@
 
 // You can import stylesheets (.scss or .css).
 import "../styles/main.scss";
-import "../styles/wheel.css";
-import "../styles/loader.css";
+import "../styles/envelop.css"
 
 // jspsych
 import FullscreenPlugin from "@jspsych/plugin-fullscreen";
@@ -28,6 +27,7 @@ import {
   BLOCK_INSTRUCTIONS,
   BREAK,
   CONDITION_ARR,
+  CONTINUE_PROMT_HTML,
   GENERAL_INSTRUCTIONS,
   IMAGERY,
   PRACTICE_QUIZ,
@@ -43,6 +43,10 @@ import {
 import { initializeApp } from "firebase/app";
 import { getFirestore, setDoc, doc, getDoc } from "firebase/firestore";
 import QuizPlugin from "./plugins/quiz";
+import { initializeAdviceEstimation } from "./block";
+import { createConditionArray } from "./block";
+import { createBlock } from "./block";
+import { splitCondtionArray } from "./block";
 
 /**
  * This function will be executed by jsPsych Builder and is expected to run the jsPsych experiment
@@ -131,65 +135,27 @@ export async function run({
   //   fullscreen_mode: true,
   // });
 
-  // base trial objects
-  const countdown_trial = {
-    type: CountDownPlugin,
-  };
+  const JAR_IMAGE_ESTIMATION_DICTIONARY = initializeAdviceEstimation();
+  console.log(JAR_IMAGE_ESTIMATION_DICTIONARY);
+
+  const condition_arr = createConditionArray();
+  console.log(condition_arr);
 
   const dishonesty_trial = {
     type: DishonestyPlugin,
+    jar_image_estimation_dictionary: JAR_IMAGE_ESTIMATION_DICTIONARY
   };
 
-  const display_text_trial = {
-    type: DisplayTextPlugin,
-  };
+  const {first_half, second_half} = splitCondtionArray(condition_arr);
 
-  const instruction_trial = {
+  createBlock(dishonesty_trial, timeline, first_half)
+
+  timeline.push({
     type: HtmlKeyboardResponsePlugin,
-  };
+    stimulus: `<p>This is a break. </p>${CONTINUE_PROMT_HTML}`,
+  });
 
-  const quiz_trial = {
-    type: QuizPlugin,
-  }
-
-  /**
-   * THE INSTRUCTION FOR NOW...
-   */
-  // // Instructions before the Role allocation
-  // GENERAL_INSTRUCTIONS.slice(0, 4).forEach((instruction_arr) => {
-  //   timeline.push({
-  //     type: InstructionPlugin,
-  //     instruction_arr: instruction_arr,
-  //   });
-  // });
-
-  // // Role allocation: show the spinning wheel
-  // timeline.push({
-  //   type: SpinningWheelPlugin,
-  // });
-
-  // // Instructions after the Role allocation
-  // GENERAL_INSTRUCTIONS.slice(4).forEach((instruction_arr) => {
-  //   timeline.push({
-  //     type: InstructionPlugin,
-  //     instruction_arr: instruction_arr,
-  //   });
-  // });
-
-   /**
-   * Main experiment
-   */
-  createMultipleBlock(
-    instruction_trial,
-    BLOCK_INSTRUCTIONS,
-    quiz_trial,
-    dishonesty_trial,
-    display_text_trial,
-    countdown_trial,
-    CONDITION_ARR,
-    PRACTICE_QUIZ,
-    timeline
-  );
+  createBlock(dishonesty_trial, timeline, second_half)
 
   // Ending information, saved the data and redirect the users.
   timeline.push({
