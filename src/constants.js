@@ -14,6 +14,25 @@ export const ADVICE_PROMPT = {
     "Public advice - The advice shared with all participants: <br> The jar contains {num} pounds.",
 };
 
+// Offset for generating advice 
+export const OFFSET = 2
+
+// For dishonesty old coin experiment
+// Constants for condition
+// export const BASELINE = "BASELINE";
+export const IMAGERY = "IMAGERY";
+export const BREAK = "BREAK";
+
+export const CONDITION_ARR = [BASELINE, IMAGERY, BREAK];
+
+// Constants for roles
+export const ADVISOR = "ADVISOR";
+export const ESTIMATOR = "ESTIMATOR";
+
+// Constants for estimate types
+export const ACCURATE = "ACCURATE";
+export const HIGH = "HIGH";
+
 // Constants for fixation cross
 export const FIXATION_CROSS_HTML = `<h1 style='font-size: 60px;'>+</h1>`;
 export const FIXATION_CROSS_DURATION = 3000;

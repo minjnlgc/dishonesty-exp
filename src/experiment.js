@@ -8,8 +8,7 @@
 
 // You can import stylesheets (.scss or .css).
 import "../styles/main.scss";
-import "../styles/wheel.css";
-import "../styles/loader.css";
+import "../styles/envelop.css"
 
 // jspsych
 import FullscreenPlugin from "@jspsych/plugin-fullscreen";

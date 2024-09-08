@@ -1,5 +1,5 @@
 import { initJsPsych } from "jspsych";
-import { CONDITIONS, JARS_IMG_NAMES } from "./constants";
+import { CONDITIONS, JARS_IMG_NAMES, OFFSET } from "./constants";
 
 const jsPsych = initJsPsych();
 let block_number = 0;
@@ -9,8 +9,8 @@ export const initializeAdviceEstimation = () => {
   for (const image_id of JARS_IMG_NAMES) {
     const base_num = parseFloat(image_id.slice(0, 5));
     const estimation = jsPsych.randomization.randomInt(
-      base_num - 5,
-      base_num + 5
+      base_num - OFFSET,
+      base_num + OFFSET
     );
     advice_estimation_dictionary[image_id] = Math.round(estimation * 100) / 100;
   }

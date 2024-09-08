@@ -24,11 +24,11 @@ const info = {
     },
     response_duration: {
       type: ParameterType.INT,
-      default: 10000, // 10 sec
+      default: 30000, // 10 sec
     },
     image_size_percentage: {
       type: ParameterType.STRING,
-      default: 10,
+      default: 40,
     },
     response: {
       type: ParameterType.INT,
@@ -66,6 +66,35 @@ const jar_image_history = {
   PRIVATE: new Set(),
   PUBLIC: new Set(),
 };
+
+const envelop_closed_SVG_HTML = `
+      <svg
+          xmlns="http://www.w3.org/2000/svg"
+          id="1"
+          viewBox="0 0 512 512"
+          width="150"
+          height="150"
+          id='close'
+        >
+          <path
+            d="M48 64C21.5 64 0 85.5 0 112c0 15.1 7.1 29.3 19.2 38.4L236.8 313.6c11.4 8.5 27 8.5 38.4 0L492.8 150.4c12.1-9.1 19.2-23.3 19.2-38.4c0-26.5-21.5-48-48-48H48zM0 176V384c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V176L294.4 339.2c-22.8 17.1-54 17.1-76.8 0L0 176z"
+          />
+        </svg>
+`
+
+const envelop_open_SVG_HTML = `
+      <svg
+          xmlns="http://www.w3.org/2000/svg"
+          id="1"
+          viewBox="0 0 512 512"
+          width="150"
+          height="150"
+          id='open'
+          class='highlight'
+        >
+         <path d="M215.4 96L144 96l-36.2 0L96 96l0 8.8L96 144l0 40.4 0 89L.2 202.5c1.6-18.1 10.9-34.9 25.7-45.8L48 140.3 48 96c0-26.5 21.5-48 48-48l76.6 0 49.9-36.9C232.2 3.9 243.9 0 256 0s23.8 3.9 33.5 11L339.4 48 416 48c26.5 0 48 21.5 48 48l0 44.3 22.1 16.4c14.8 10.9 24.1 27.7 25.7 45.8L416 273.4l0-89 0-40.4 0-39.2 0-8.8-11.8 0L368 96l-71.4 0-81.3 0zM0 448L0 242.1 217.6 403.3c11.1 8.2 24.6 12.7 38.4 12.7s27.3-4.4 38.4-12.7L512 242.1 512 448s0 0 0 0c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64c0 0 0 0 0 0zM176 160l160 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-160 0c-8.8 0-16-7.2-16-16s7.2-16 16-16zm0 64l160 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-160 0c-8.8 0-16-7.2-16-16s7.2-16 16-16z"/>
+        </svg>
+`
 
 const jar_images_arr = JARS_IMG_NAMES;
 
@@ -106,6 +135,18 @@ class DishonestyPlugin {
             <img src='../../assets/images/jars/${jar_image_id}'style='max-width: ${trial.image_size_percentage}%; height: auto' />
         </div>`;
 
+    const envelop_SVG_HTML = `
+       <span id='envelop-private' class='envelop'>
+        ${envelop_closed_SVG_HTML}
+       </span>
+       <span id='envelop-public' class='envelop'>
+        ${envelop_closed_SVG_HTML}
+       </span>
+       <span id='envelop-baseline' class='envelop'>
+        ${envelop_closed_SVG_HTML}
+       </span>
+    `;
+    
     // prompt for baseline condition
     const enter_advice_baseline_html = ` 
       <h1 id='count-down'></h1>  
@@ -125,15 +166,24 @@ class DishonestyPlugin {
 
     console.log("image_id:", jar_image_id);
 
+    // jar image
     display_element.innerHTML = img_html;
     await this.delay(trial.image_display_duration);
 
-    display_element.innerHTML = `<h2>${ADVICE_PROMPT[trial.condition].replace(
+    // envelops
+    display_element.innerHTML = envelop_SVG_HTML;
+    await this.delay(800);
+    display_element.querySelector(`#envelop-${trial.condition.toLowerCase()}`).innerHTML = envelop_open_SVG_HTML;
+    await this.delay(2000);
+
+    // advice prompt
+    display_element.innerHTML = `<h2 style='line-height: 1.5;'>${ADVICE_PROMPT[trial.condition].replace(
       "{num}",
       trial_data.advice_estimation
     )}</h2>`;
     await this.delay(trial.advice_display_duration);
 
+    // user input - entering the advice
     display_element.innerHTML = enter_advice_html;
 
     display_element
@@ -151,12 +201,14 @@ class DishonestyPlugin {
       });
 
     // show the countdown in baseline conditon when entering advice
-    let seconds = trial.response_duration / 1000;
-    while (seconds > 0) {
-      display_element.querySelector("#count-down").innerText = seconds;
-      await this.delay(1000);
-      seconds -= 1;
-    }
+    // let seconds = trial.response_duration / 1000;
+    // while (seconds > 0) {
+    //   display_element.querySelector("#count-down").innerText = seconds;
+    //   await this.delay(1000);
+    //   seconds -= 1;
+    // }
+
+    await this.delay(trial.response_duration);
 
     display_element.innerHTML = FIXATION_CROSS_HTML;
     await this.delay(FIXATION_CROSS_DURATION);
