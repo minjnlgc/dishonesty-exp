@@ -4,9 +4,9 @@ import { CONDITIONS, JARS_IMG_NAMES, OFFSET } from "./constants";
 const jsPsych = initJsPsych();
 let block_number = 0;
 
-export const initializeAdviceEstimation = () => {
+export const initializeAdviceEstimation = (jar_image_arr = JARS_IMG_NAMES) => {
   const advice_estimation_dictionary = {};
-  for (const image_id of JARS_IMG_NAMES) {
+  for (const image_id of jar_image_arr) {
     const base_num = parseFloat(image_id.slice(0, 5));
     const estimation = jsPsych.randomization.randomInt(
       base_num - OFFSET,
@@ -35,12 +35,34 @@ export const splitCondtionArray = (arr) => {
 
 export const createBlock = (dishonesty_trial, timeline, condition_arr) => {
   console.log(condition_arr);
-  
+
   condition_arr.forEach((condition) => {
     timeline.push({
       ...dishonesty_trial,
       condition: condition,
       block_number: block_number,
+    });
+  });
+};
+
+export const createPracticeBlock = (
+  dishonesty_trial,
+  timeline,
+  condition_arr,
+  practice_jar_img_arr
+) => {
+  const shuffled_condition_arr = jsPsych.randomization.shuffle(condition_arr);
+  const shuffled_practice_jar_img_arr =
+    jsPsych.randomization.shuffle(practice_jar_img_arr);
+
+  console.log(shuffled_condition_arr);
+  console.log(shuffled_practice_jar_img_arr);
+
+  shuffled_condition_arr.forEach((c, i) => {
+    timeline.push({
+      ...dishonesty_trial,
+      condition: c,
+      jar_image: shuffled_practice_jar_img_arr[i],
     });
   });
 };

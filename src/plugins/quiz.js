@@ -53,6 +53,7 @@ class QuizPlugin {
       <div id='recap-instruction' style='display: none; margin-top: 10px;'>${trial.recap_instruction_content}</div>
       ${quiz_html}  
       <center><button id="submit-button" style="margin-top: 20px; font-size: 16px;" class='jspsych-btn'>Submit</button></center>
+      <br />
     </div>
     `;
     display_element.innerHTML = content;
