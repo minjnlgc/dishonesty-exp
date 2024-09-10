@@ -179,10 +179,10 @@ class DishonestyPlugin {
     display_element.querySelector(
       `#envelop-${trial.condition.toLowerCase()}`
     ).innerHTML = envelop_open_SVG_HTML;
-    await this.delay(2000);
+    await this.delay(800);
 
     // advice prompt
-    display_element.innerHTML = `<h2 style='line-height: 1.5;'>${ADVICE_PROMPT[
+    display_element.innerHTML += `<h2 style='line-height: 1.5; margin-top: 20px;'>${ADVICE_PROMPT[
       trial.condition
     ].replace("{num}", trial_data.advice_estimation)}</h2>`;
     await this.delay(trial.advice_display_duration);
@@ -204,11 +204,12 @@ class DishonestyPlugin {
         }
       });
 
-    await this.delay(trial.response_duration);
+    // if we want to proceed to the next trial after 20 sec even if no response then uncomment the following lines
+    // await this.delay(trial.response_duration); 
 
-    display_element.innerHTML = FIXATION_CROSS_HTML;
-    await this.delay(FIXATION_CROSS_DURATION);
-    this.endTrial(trial_data);
+    // display_element.innerHTML = FIXATION_CROSS_HTML;
+    // await this.delay(FIXATION_CROSS_DURATION);
+    // this.endTrial(trial_data);
   }
 
   async delay(ms) {
@@ -223,6 +224,10 @@ class DishonestyPlugin {
 
     const response = Number(display_element.querySelector("#response").value);
     console.log(response);
+
+    if (!response) {
+      return;
+    }
 
     if (
       trial.min &&

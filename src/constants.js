@@ -7,11 +7,11 @@ export const CONDITIONS = [BASELINE, PRIVATE, PUBLIC];
 
 // Constants for different advice of condition
 export const ADVICE_PROMPT = {
-  BASELINE: "No advice to you - The advice shared with other participants",
+  BASELINE: "<span style='color: #7bc043;'>No advice to you</span> - The advice shared with other participants",
   PRIVATE:
-    "Private advice - The advice only shared with you: <br> The jar contains {num} pounds.",
+    "<span style='color: #ee4035;'>Private advice</span> - The advice only shared with you: <br> The jar contains {num} pounds.",
   PUBLIC:
-    "Public advice - The advice shared with all participants: <br> The jar contains {num} pounds.",
+    "<span style='color: #0392cf;'>Public advice</span> - The advice shared with all participants: <br> The jar contains {num} pounds.",
 };
 
 // Offset for generating advice
