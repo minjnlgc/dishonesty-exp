@@ -8,7 +8,7 @@
 
 // You can import stylesheets (.scss or .css).
 import "../styles/main.scss";
-import "../styles/envelop.css"
+import "../styles/envelop.css";
 
 // jspsych
 import FullscreenPlugin from "@jspsych/plugin-fullscreen";
@@ -27,16 +27,20 @@ import {
   BLOCK_INSTRUCTIONS,
   BREAK,
   CONDITION_ARR,
+  CONDITIONS,
   CONTINUE_PROMT_HTML,
   GENERAL_INSTRUCTIONS,
   IMAGERY,
+  PRACTICE_JAR_IMG_NAMES,
   PRACTICE_QUIZ,
+  RECAP_INSTRUCTION,
 } from "./constants";
 import {
   createBreakConditionBlockSuit,
   createMentalImageryConditionBlockSuit,
   createMultipleBlock,
-  createBaseLineConditionBlockSuit
+  createBaseLineConditionBlockSuit,
+  createPracticeBlock,
 } from "./block";
 
 // firebase
@@ -47,6 +51,7 @@ import { initializeAdviceEstimation } from "./block";
 import { createConditionArray } from "./block";
 import { createBlock } from "./block";
 import { splitCondtionArray } from "./block";
+import BonusPlugin from "./plugins/bonus";
 
 /**
  * This function will be executed by jsPsych Builder and is expected to run the jsPsych experiment
@@ -129,33 +134,95 @@ export async function run({
     stimulus: "<p>Welcome to our experiment!</p>",
   });
 
-  // Switch to fullscreen
-  // timeline.push({
-  //   type: FullscreenPlugin,
-  //   fullscreen_mode: true,
-  // });
+  /**
+   * Practice trials
+   */
+  timeline.push({
+    type: HtmlKeyboardResponsePlugin,
+    stimulus: `<p>In the following you will see 3 practice trials. </p> ${CONTINUE_PROMT_HTML}`,
+  });
 
+  const PRACTICE_JAR_IMAGE_ESTIMATION_DICTIONARY = initializeAdviceEstimation(
+    PRACTICE_JAR_IMG_NAMES
+  );
+  const practice_dishonesty_trial = {
+    type: DishonestyPlugin,
+    jar_image_estimation_dictionary: PRACTICE_JAR_IMAGE_ESTIMATION_DICTIONARY,
+  };
+
+  createPracticeBlock(
+    practice_dishonesty_trial,
+    timeline,
+    CONDITIONS,
+    PRACTICE_JAR_IMG_NAMES
+  );
+
+  timeline.push({
+    type: HtmlKeyboardResponsePlugin,
+    stimulus: `<p>Well done! You have finished the practice trials.</p> ${CONTINUE_PROMT_HTML}`,
+  });
+
+  /**
+   * Instructions recap & Quiz
+   */
+
+  timeline.push({
+    type: HtmlKeyboardResponsePlugin,
+    stimulus: `<p>Before starting the experiment, there are some quizzes to test your understanding. </p> ${CONTINUE_PROMT_HTML}`,
+  });
+
+  timeline.push({
+    type: QuizPlugin,
+    question_list: PRACTICE_QUIZ,
+    recap_instruction_content: RECAP_INSTRUCTION,
+  });
+
+  timeline.push({
+    type: HtmlKeyboardResponsePlugin,
+    stimulus: `<p>Well done! You have finished the quizzes. <br> We can start the experiment!</p> ${CONTINUE_PROMT_HTML}`,
+  });
+
+  /**
+   * Main experiment
+   */
+  // initialised the dictionary with image and generated estimation
   const JAR_IMAGE_ESTIMATION_DICTIONARY = initializeAdviceEstimation();
   console.log(JAR_IMAGE_ESTIMATION_DICTIONARY);
 
+  // create the array the contains the sequence of the conditions showing up in this experiment
   const condition_arr = createConditionArray();
   console.log(condition_arr);
 
   const dishonesty_trial = {
     type: DishonestyPlugin,
-    jar_image_estimation_dictionary: JAR_IMAGE_ESTIMATION_DICTIONARY
+    jar_image_estimation_dictionary: JAR_IMAGE_ESTIMATION_DICTIONARY,
   };
 
-  const {first_half, second_half} = splitCondtionArray(condition_arr);
+  // split condition array into two halfs, so that we can have two block
+  const { first_half, second_half } = splitCondtionArray(condition_arr);
 
-  createBlock(dishonesty_trial, timeline, first_half)
+  // first block
+  // remove slice to see all
+  createBlock(dishonesty_trial, timeline, first_half.slice(0, 3));
 
+  // break
   timeline.push({
     type: HtmlKeyboardResponsePlugin,
     stimulus: `<p>This is a break. </p>${CONTINUE_PROMT_HTML}`,
   });
 
-  createBlock(dishonesty_trial, timeline, second_half)
+  // second block
+  // remove slice to see all
+  createBlock(dishonesty_trial, timeline, second_half.slice(0, 3));
+
+  /**
+   * Experiment End
+   */
+
+  // showing bonus
+  timeline.push({
+    type: BonusPlugin,
+  });
 
   // Ending information, saved the data and redirect the users.
   timeline.push({
@@ -168,7 +235,7 @@ export async function run({
     // on_finish: async () => {
     //   await saveSubjectData(subject_id, jsPsych.data.get());
     //   window.location = process.env.PROLIFIC_REDIRECT_URL || "https://app.prolific.com/";
-    // },
+    // }, // uncomment this part to save data and redirect
   });
 
   await jsPsych.run(timeline);
