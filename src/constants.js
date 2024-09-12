@@ -5,13 +5,19 @@ export const PUBLIC = "PUBLIC";
 
 export const CONDITIONS = [BASELINE, PRIVATE, PUBLIC];
 
+// colors hex
+export const GREEN_HEX = "#7bc043";
+export const RED_HEX = "#ee4035";
+export const BLUE_HEX = "#0392cf";
+
 // Constants for different advice of condition
 export const ADVICE_PROMPT = {
-  BASELINE: "<span style='color: #7bc043;'>No advice to you</span> - The advice shared with other participants",
+  BASELINE:
+    "<span style='color: {HEX};'>No advice to you</span> - The advice shared with other participants",
   PRIVATE:
-    "<span style='color: #ee4035;'>Private advice</span> - The advice only shared with you: <br> The jar contains {num} pounds.",
+    "<span style='color: {HEX};'>Private advice</span> - The advice only shared with you: <br> The jar contains {num} pounds.",
   PUBLIC:
-    "<span style='color: #0392cf;'>Public advice</span> - The advice shared with all participants: <br> The jar contains {num} pounds.",
+    "<span style='color: {HEX};'>Public advice</span> - The advice shared with all participants: <br> The jar contains {num} pounds.",
 };
 
 // Offset for generating advice

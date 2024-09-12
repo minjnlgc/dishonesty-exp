@@ -18,34 +18,28 @@ import { initJsPsych } from "jspsych";
 
 // customised
 import DishonestyPlugin from "./plugins/dishonesty";
-import SpinningWheelPlugin from "./plugins/wheel";
-import DisplayTextPlugin from "./plugins/display-text";
-import InstructionPlugin from "./plugins/instruction";
-import CountDownPlugin from "./plugins/countdown";
 import {
-  BASELINE,
-  BLOCK_INSTRUCTIONS,
-  BREAK,
-  CONDITION_ARR,
+
+  BLUE_HEX,
   CONDITIONS,
   CONTINUE_PROMT_HTML,
-  GENERAL_INSTRUCTIONS,
-  IMAGERY,
+  GREEN_HEX,
   PRACTICE_JAR_IMG_NAMES,
   PRACTICE_QUIZ,
   RECAP_INSTRUCTION,
+  RED_HEX,
 } from "./constants";
 import {
-  createBreakConditionBlockSuit,
-  createMentalImageryConditionBlockSuit,
-  createMultipleBlock,
-  createBaseLineConditionBlockSuit,
   createPracticeBlock,
 } from "./block";
 
 // firebase
 import { initializeApp } from "firebase/app";
-import { getFirestore, setDoc, doc, getDoc } from "firebase/firestore";
+import {
+  getFirestore,
+  setDoc,
+  doc
+} from "firebase/firestore";
 import QuizPlugin from "./plugins/quiz";
 import { initializeAdviceEstimation } from "./block";
 import { createConditionArray } from "./block";
@@ -104,6 +98,7 @@ export async function run({
     }
   };
 
+
   /**
    * Initialising jsPsych and get participant ID.
    */
@@ -119,6 +114,48 @@ export async function run({
   const session_id = jsPsych.data.getURLVariable("SESSION_ID");
 
   console.log(subject_id, study_id, session_id);
+
+  // Add to data properties only if prolific info are not undefined or not contain 'TEST'
+  if (!subject_id.includes("TEST") && study_id && session_id) {
+    jsPsych.data.addProperties({
+      subject_id: subject_id,
+      study_id: study_id,
+      session_id: session_id,
+    });
+  }
+
+  /**
+   * Get the envelope colors based on UTC time
+   */
+  const getEnvelopeColors = () => {
+    const currUTCHours = new Date().getUTCHours();
+    console.log(currUTCHours);
+
+    // Assuming "morning" is defined as before or equal to 12 UTC
+    const isMorning = currUTCHours <= 12;
+
+    // adding the readable color name to all the data
+    jsPsych.data.addProperties({
+      PRIVATE_COLOR: isMorning ? "RED" : "BLUE",
+      PUBLIC_COLOR: isMorning ? "BLUE" : "RED",
+    });
+
+    console.log({
+      PRIVATE_COLOR: isMorning ? "RED" : "BLUE",
+      PUBLIC_COLOR: isMorning ? "BLUE" : "RED",
+    });
+
+    // return the object contains the condition and the corresponding colours set.
+    return {
+      BASELINE: GREEN_HEX,
+      PRIVATE: isMorning ? RED_HEX : BLUE_HEX,
+      PUBLIC: isMorning ? BLUE_HEX : RED_HEX,
+    };
+  };
+
+  // Get the colors for the current participant
+  const envelope_colors = getEnvelopeColors();
+  console.log(envelope_colors);
 
   // Preload assets
   timeline.push({
@@ -148,6 +185,7 @@ export async function run({
   const practice_dishonesty_trial = {
     type: DishonestyPlugin,
     jar_image_estimation_dictionary: PRACTICE_JAR_IMAGE_ESTIMATION_DICTIONARY,
+    envelope_colors: envelope_colors,
   };
 
   createPracticeBlock(
@@ -196,6 +234,7 @@ export async function run({
   const dishonesty_trial = {
     type: DishonestyPlugin,
     jar_image_estimation_dictionary: JAR_IMAGE_ESTIMATION_DICTIONARY,
+    envelope_colors: envelope_colors,
   };
 
   // split condition array into two halfs, so that we can have two block
