@@ -58,15 +58,21 @@ const info = {
       type: ParameterType.OBJECT,
       default: null,
     },
+    envelope_colors: {
+      type: ParameterType.OBJECT,
+      default: null,
+    },
   },
 };
 
+// dictionary of sets of images occur in each condition, making sure no repeat.
 const jar_image_history = {
   BASELINE: new Set(),
   PRIVATE: new Set(),
   PUBLIC: new Set(),
 };
 
+// SVG for closed envelope
 const envelop_closed_SVG_HTML = `
       <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -82,6 +88,7 @@ const envelop_closed_SVG_HTML = `
         </svg>
 `;
 
+// SVG for open envelope
 const envelop_open_SVG_HTML = `
       <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -106,6 +113,7 @@ class DishonestyPlugin {
   async trial(display_element, trial) {
     const startTime = performance.now();
 
+    // data to collect
     const trial_data = {
       condition: trial.condition,
       response: trial.response,
@@ -113,11 +121,13 @@ class DishonestyPlugin {
       jar_image: trial.jar_image,
       advice_estimation: null,
       block_number: trial.block_number,
+      envelope_colors: trial.envelope_colors,
     };
 
     // console.log(jar_images_arr);
     console.log(trial.condition);
 
+    // select images if no image provided
     if (trial.jar_image === null) {
       let jar_image_id;
       do {
@@ -131,21 +141,23 @@ class DishonestyPlugin {
       trial_data.jar_image = jar_image_id;
     }
 
+    // get the advice according to condition
     trial_data.advice_estimation =
-        trial.jar_image_estimation_dictionary[trial_data.jar_image];
+      trial.jar_image_estimation_dictionary[trial_data.jar_image];
 
     const img_html = `<div>
             <img src='../../assets/images/jars/${trial_data.jar_image}'style='max-width: ${trial.image_size_percentage}%; height: auto' />
         </div>`;
 
+    // colors hex of all envelope decided by trial.envelope_colors
     const envelop_SVG_HTML = `
-       <span id='envelop-private' class='envelop'>
+       <span id='envelop-private' class='envelop' style='color: ${trial.envelope_colors["PRIVATE"]}'>
         ${envelop_closed_SVG_HTML}
        </span>
-       <span id='envelop-public' class='envelop'>
+       <span id='envelop-public' class='envelop' style='color: ${trial.envelope_colors["PUBLIC"]}'>
         ${envelop_closed_SVG_HTML}
        </span>
-       <span id='envelop-baseline' class='envelop'>
+       <span id='envelop-baseline' class='envelop' style='color: ${trial.envelope_colors["BASELINE"]}'>
         ${envelop_closed_SVG_HTML}
        </span>
     `;
@@ -153,7 +165,7 @@ class DishonestyPlugin {
     // prompt for baseline condition
     const enter_advice_baseline_html = ` 
       <h1 id='count-down'></h1>  
-      <h2>Enter your advice: </h2>
+      <h2>Enter your estimation: </h2>
         <div style='display: flex; justify-content: center; margin-right: 25px'>
           <label style='font-size: 35px; margin-top: 5px' >£</label> <input type='number' id='response' required
             style='padding: 7px 8px; width: 70%; margin-left: 15px; font-size: 20px; box-sizing: border-box;'
@@ -184,18 +196,22 @@ class DishonestyPlugin {
     // advice prompt
     display_element.innerHTML += `<h2 style='line-height: 1.5; margin-top: 20px;'>${ADVICE_PROMPT[
       trial.condition
-    ].replace("{num}", trial_data.advice_estimation)}</h2>`;
+    ]
+      .replace("{num}", trial_data.advice_estimation)
+      .replace("{HEX}", trial.envelope_colors[trial.condition])}</h2>`;
     await this.delay(trial.advice_display_duration);
 
     // user input - entering the advice
     display_element.innerHTML = enter_advice_html;
 
+    // add handle submit function to eventlistener of clicking response button
     display_element
       .querySelector("#response-btn")
       .addEventListener("click", async () => {
         this.handleSubmit(display_element, trial_data, startTime, trial);
       });
 
+    // add handle submit function to eventlistener of pressing response button
     display_element
       .querySelector("#response")
       .addEventListener("keypress", async (e) => {
@@ -205,30 +221,36 @@ class DishonestyPlugin {
       });
 
     // if we want to proceed to the next trial after 20 sec even if no response then uncomment the following lines
-    // await this.delay(trial.response_duration); 
+    // await this.delay(trial.response_duration);
 
     // display_element.innerHTML = FIXATION_CROSS_HTML;
     // await this.delay(FIXATION_CROSS_DURATION);
     // this.endTrial(trial_data);
   }
 
+  // class function, delay, so that we can reuse it
   async delay(ms) {
     return new Promise((resolve) =>
       this.jsPsych.pluginAPI.setTimeout(resolve, ms)
     );
   }
 
+  // class function, handle submit user response
   async handleSubmit(display_element, trial_data, startTime, trial) {
+    // calculate the response time
     const rt = performance.now() - startTime;
     trial_data.rt = rt;
 
+    // get the response
     const response = Number(display_element.querySelector("#response").value);
     console.log(response);
 
+    // no response no proceed
     if (!response) {
       return;
     }
 
+    // check if respone meet requirement, if so save it.
     if (
       trial.min &&
       trial.max &&
@@ -238,16 +260,17 @@ class DishonestyPlugin {
         `The number must be larger than ${trial.min} and smaller than ${trial.max}`
       );
     } else {
-      display_element.querySelector("#response").value = null;
-      trial_data.response = response;
-      this.jsPsych.pluginAPI.clearAllTimeouts();
+      display_element.querySelector("#response").value = null; // clear the response in the input box
+      trial_data.response = response; // save it to data
+      this.jsPsych.pluginAPI.clearAllTimeouts(); // clean the timeout (delay)
       console.log(trial_data);
-      display_element.innerHTML = FIXATION_CROSS_HTML;
+      display_element.innerHTML = FIXATION_CROSS_HTML; // showing fixation cross
       await this.delay(FIXATION_CROSS_DURATION);
-      this.endTrial(trial_data);
+      this.endTrial(trial_data); // end the trial
     }
   }
 
+  // class function, end trial
   endTrial(trial_data) {
     this.jsPsych.pluginAPI.clearAllTimeouts();
     this.jsPsych.finishTrial(trial_data);
