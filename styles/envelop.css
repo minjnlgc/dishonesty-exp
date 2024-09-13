@@ -1,6 +1,7 @@
 .envelop {
   fill: currentColor;
   margin-right: 40px;
+  transition: color 0.3s;
 }
 
 .highlight {
@@ -8,14 +9,15 @@
   transition: all .2s ease-in-out;
 }
 
-/* #envelop-private {
-  color: #ee4035;
+.envelop > svg:hover {
+  transform: scale(1.1); 
 }
 
-#envelop-public {
-  color: #0392cf;
+.envelop > svg:active {
+  color: rgb(65,3,85); 
+  transform: scale(0.80); 
 }
 
-#envelop-baseline {
-  color: #7bc043;
-} */
+#open, .disabled {
+  pointer-events: none;
+}
