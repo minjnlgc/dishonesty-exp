@@ -1,6 +1,7 @@
 import { ParameterType } from "jspsych";
 import {
   ADVICE_PROMPT,
+  CONDITIONS,
   FIXATION_CROSS_DURATION,
   FIXATION_CROSS_HTML,
   JARS_IMG_NAMES,
@@ -62,6 +63,10 @@ const info = {
       type: ParameterType.OBJECT,
       default: null,
     },
+    is_choose_by_user: {
+      type: ParameterType.BOOL,
+      default: true,
+    },
   },
 };
 
@@ -76,7 +81,6 @@ const jar_image_history = {
 const envelop_closed_SVG_HTML = `
       <svg
           xmlns="http://www.w3.org/2000/svg"
-          id="1"
           viewBox="0 0 512 512"
           width="150"
           height="150"
@@ -92,7 +96,6 @@ const envelop_closed_SVG_HTML = `
 const envelop_open_SVG_HTML = `
       <svg
           xmlns="http://www.w3.org/2000/svg"
-          id="1"
           viewBox="0 0 512 512"
           width="150"
           height="150"
@@ -122,6 +125,8 @@ class DishonestyPlugin {
       advice_estimation: null,
       block_number: trial.block_number,
       envelope_colors: trial.envelope_colors,
+      is_choose_by_user: trial.is_choose_by_user,
+      user_choice: null,
     };
 
     // console.log(jar_images_arr);
@@ -187,45 +192,103 @@ class DishonestyPlugin {
 
     // envelops
     display_element.innerHTML = envelop_SVG_HTML;
-    await this.delay(800);
-    display_element.querySelector(
-      `#envelop-${trial.condition.toLowerCase()}`
-    ).innerHTML = envelop_open_SVG_HTML;
-    await this.delay(800);
 
-    // advice prompt
-    display_element.innerHTML += `<h2 style='line-height: 1.5; margin-top: 20px;'>${ADVICE_PROMPT[
-      trial.condition
-    ]
-      .replace("{num}", trial_data.advice_estimation)
-      .replace("{HEX}", trial.envelope_colors[trial.condition])}</h2>`;
-    await this.delay(trial.advice_display_duration);
+    if (trial.is_choose_by_user) {
+      console.log("Entering condition setup");
+      for (const condition of CONDITIONS) {
+        console.log("Setting up condition:", condition);
+        const envelope = display_element.querySelector(`#envelop-${condition.toLowerCase()}`);
+        console.log("Found envelope:", envelope);
+  
+        if (envelope) {
+          const svg = envelope.querySelector("svg");
+          if (svg) {
+            svg.addEventListener("click", () => this.handleUserChoice(condition, display_element, trial_data, trial, enter_advice_html, startTime));
+          } else {
+            console.error("SVG element not found for condition:", condition);
+          }
+        } else {
+          console.error("Envelope not found for condition:", condition);
+        }
+      }
+    } else {
+      // If not user choose, as usual
+      display_element.querySelectorAll(`.envelop > svg`).forEach((element) => {
+        element.classList.add("disabled");
+      });
+  
+      await this.delay(800);
+      const usualEnvelope = display_element.querySelector(`#envelop-${trial.condition.toLowerCase()}`);
+      if (usualEnvelope) {
+        usualEnvelope.innerHTML = envelop_open_SVG_HTML;
+      }
+      await this.delay(800);
+  
+      // Add advice prompt
+      display_element.innerHTML += `<h2 style='line-height: 1.5; margin-top: 20px;'>${ADVICE_PROMPT[trial.condition]
+        .replace("{num}", trial_data.advice_estimation)
+        .replace("{HEX}", trial.envelope_colors[trial.condition])}</h2>`;
+      await this.delay(trial.advice_display_duration);
+  
+      // Set to enter advice HTML
+      display_element.innerHTML = enter_advice_html;
+      this.setupEventListeners(display_element, trial_data, startTime, trial); // Reattach event listeners
+    }
+  }
 
-    // user input - entering the advice
-    display_element.innerHTML = enter_advice_html;
-
-    // add handle submit function to eventlistener of clicking response button
+  // Class Function to set up event listeners
+  async setupEventListeners(display_element, trial_data, startTime, trial) {
+    // Handle clicking response button
     display_element
       .querySelector("#response-btn")
       .addEventListener("click", async () => {
-        this.handleSubmit(display_element, trial_data, startTime, trial);
+        await this.handleSubmit(display_element, trial_data, startTime, trial);
       });
 
-    // add handle submit function to eventlistener of pressing response button
+    // Handle pressing Enter key in response input
     display_element
       .querySelector("#response")
       .addEventListener("keypress", async (e) => {
         if (e.key === "Enter") {
-          this.handleSubmit(display_element, trial_data, startTime, trial);
+          await this.handleSubmit(
+            display_element,
+            trial_data,
+            startTime,
+            trial
+          );
         }
       });
+  }
 
-    // if we want to proceed to the next trial after 20 sec even if no response then uncomment the following lines
-    // await this.delay(trial.response_duration);
+  // Class Function to handle user choice
+  async handleUserChoice(condition, display_element, trial_data, trial, enter_advice_html, startTime) {
+    console.log("User chose condition:", condition);
 
-    // display_element.innerHTML = FIXATION_CROSS_HTML;
-    // await this.delay(FIXATION_CROSS_DURATION);
-    // this.endTrial(trial_data);
+    // Disable all envelopes
+    display_element.querySelectorAll(`.envelop > svg`).forEach((element) => {
+      element.classList.add("disabled");
+    });
+
+    // Change the chosen envelope to the open envelope SVG
+    const chosenEnvelope = display_element.querySelector(
+      `#envelop-${condition.toLowerCase()}`
+    );
+    if (chosenEnvelope) {
+      chosenEnvelope.innerHTML = envelop_open_SVG_HTML;
+    }
+
+    // Add advice
+    display_element.innerHTML += `<h2 style='line-height: 1.5; margin-top: 20px;'>${ADVICE_PROMPT[
+      condition
+    ]
+      .replace("{num}", trial_data.advice_estimation)
+      .replace("{HEX}", trial.envelope_colors[condition])}</h2>`;
+
+    await this.delay(trial.advice_display_duration);
+
+    // Set to enter advice HTML
+    display_element.innerHTML = enter_advice_html;
+    this.setupEventListeners(display_element, trial_data, startTime, trial); // Reattach event listeners
   }
 
   // class function, delay, so that we can reuse it
