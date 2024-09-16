@@ -6,18 +6,19 @@
 
 .highlight {
   transform: scale(1.1);
-  transition: all .2s ease-in-out;
+  transition: all 0.2s ease-in-out;
 }
 
 .envelop > svg:hover {
-  transform: scale(1.1); 
+  transform: scale(1.1);
 }
 
 .envelop > svg:active {
-  color: rgb(65,3,85); 
-  transform: scale(0.80); 
+  color: rgb(65, 3, 85);
+  transform: scale(0.8);
 }
 
-#open, .disabled {
+#open,
+.disabled {
   pointer-events: none;
 }
