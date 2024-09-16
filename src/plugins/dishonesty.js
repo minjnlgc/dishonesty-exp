@@ -197,13 +197,24 @@ class DishonestyPlugin {
       console.log("Entering condition setup");
       for (const condition of CONDITIONS) {
         console.log("Setting up condition:", condition);
-        const envelope = display_element.querySelector(`#envelop-${condition.toLowerCase()}`);
+        const envelope = display_element.querySelector(
+          `#envelop-${condition.toLowerCase()}`
+        );
         console.log("Found envelope:", envelope);
-  
+
         if (envelope) {
           const svg = envelope.querySelector("svg");
           if (svg) {
-            svg.addEventListener("click", () => this.handleUserChoice(condition, display_element, trial_data, trial, enter_advice_html, startTime));
+            svg.addEventListener("click", () =>
+              this.handleUserChoice(
+                condition,
+                display_element,
+                trial_data,
+                trial,
+                enter_advice_html,
+                startTime
+              )
+            );
           } else {
             console.error("SVG element not found for condition:", condition);
           }
@@ -216,20 +227,24 @@ class DishonestyPlugin {
       display_element.querySelectorAll(`.envelop > svg`).forEach((element) => {
         element.classList.add("disabled");
       });
-  
+
       await this.delay(800);
-      const usualEnvelope = display_element.querySelector(`#envelop-${trial.condition.toLowerCase()}`);
+      const usualEnvelope = display_element.querySelector(
+        `#envelop-${trial.condition.toLowerCase()}`
+      );
       if (usualEnvelope) {
         usualEnvelope.innerHTML = envelop_open_SVG_HTML;
       }
       await this.delay(800);
-  
+
       // Add advice prompt
-      display_element.innerHTML += `<h2 style='line-height: 1.5; margin-top: 20px;'>${ADVICE_PROMPT[trial.condition]
+      display_element.innerHTML += `<h2 style='line-height: 1.5; margin-top: 20px;'>${ADVICE_PROMPT[
+        trial.condition
+      ]
         .replace("{num}", trial_data.advice_estimation)
         .replace("{HEX}", trial.envelope_colors[trial.condition])}</h2>`;
       await this.delay(trial.advice_display_duration);
-  
+
       // Set to enter advice HTML
       display_element.innerHTML = enter_advice_html;
       this.setupEventListeners(display_element, trial_data, startTime, trial); // Reattach event listeners
@@ -261,7 +276,14 @@ class DishonestyPlugin {
   }
 
   // Class Function to handle user choice
-  async handleUserChoice(condition, display_element, trial_data, trial, enter_advice_html, startTime) {
+  async handleUserChoice(
+    condition,
+    display_element,
+    trial_data,
+    trial,
+    enter_advice_html,
+    startTime
+  ) {
     console.log("User chose condition:", condition);
 
     // Disable all envelopes
