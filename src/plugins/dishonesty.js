@@ -32,15 +32,15 @@ const info = {
     },
     image_size_percentage: {
       type: ParameterType.STRING,
-      default: 40,
+      default: 40, 
     },
     response: {
       type: ParameterType.INT,
-      default: null,
+      default: null, // participant's estimation
     },
     rt: {
       type: ParameterType.FLOAT,
-      default: null,
+      default: null, // reaction time
     },
     min: {
       type: ParameterType.INT,
@@ -52,7 +52,7 @@ const info = {
     },
     jar_image: {
       type: ParameterType.STRING,
-      default: null,
+      default: null, // the name for the image
     },
     block_number: {
       type: ParameterType.INT,
@@ -60,7 +60,7 @@ const info = {
     },
     jar_image_estimation_dictionary: {
       type: ParameterType.OBJECT,
-      default: null,
+      default: null, // the dictionary store all the jar image name & corresponding estimation for this participant
     },
     envelope_colors: {
       type: ParameterType.OBJECT,
@@ -72,12 +72,13 @@ const info = {
     },
     is_choose_by_user: {
       type: ParameterType.BOOL,
-      default: false,
+      default: false, // if true, user can choose envelope
     },
   },
 };
 
 // dictionary of sets of images occur in each condition, making sure no repeat.
+// in a set, all the things should be unique, so if you have a different logic of showing jar image, you could change here 
 const jar_image_history = {
   BASELINE: new Set(),
   PRIVATE: new Set(),
@@ -147,9 +148,9 @@ class DishonestyPlugin {
           jar_images_arr[
             this.jsPsych.randomization.randomInt(0, jar_images_arr.length - 1)
           ];
-      } while (jar_image_history[trial.condition].has(jar_image_id));
+      } while (jar_image_history[trial.condition].has(jar_image_id)); // kept selecting image if it already appear in the set, until it does not
 
-      jar_image_history[trial.condition].add(jar_image_id);
+      jar_image_history[trial.condition].add(jar_image_id); // add it to the set
       trial_data.jar_image = jar_image_id;
     }
 
