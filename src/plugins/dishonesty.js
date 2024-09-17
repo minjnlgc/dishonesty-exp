@@ -8,7 +8,7 @@ import {
   PRIVATE,
   GREEN_HEX,
   BLUE_HEX,
-  RED_HEX
+  RED_HEX,
 } from "../constants";
 
 const info = {
@@ -32,7 +32,7 @@ const info = {
     },
     image_size_percentage: {
       type: ParameterType.STRING,
-      default: 40, 
+      default: 40,
     },
     response: {
       type: ParameterType.INT,
@@ -54,6 +54,10 @@ const info = {
       type: ParameterType.STRING,
       default: null, // the name for the image
     },
+    jar_image_arr: {
+      type: ParameterType.OBJECT,
+      default: JARS_IMG_NAMES, // the name for the image
+    },
     block_number: {
       type: ParameterType.INT,
       default: null,
@@ -67,8 +71,8 @@ const info = {
       default: {
         BASELINE: GREEN_HEX,
         PRIVATE: RED_HEX,
-        PUBLIC: BLUE_HEX
-      }
+        PUBLIC: BLUE_HEX,
+      },
     },
     is_choose_by_user: {
       type: ParameterType.BOOL,
@@ -78,7 +82,7 @@ const info = {
 };
 
 // dictionary of sets of images occur in each condition, making sure no repeat.
-// in a set, all the things should be unique, so if you have a different logic of showing jar image, you could change here 
+// in a set, all the things should be unique, so if you have a different logic of showing jar image, you could change here
 const jar_image_history = {
   BASELINE: new Set(),
   PRIVATE: new Set(),
@@ -114,8 +118,6 @@ const envelop_open_SVG_HTML = `
         </svg>
 `;
 
-const jar_images_arr = JARS_IMG_NAMES;
-
 class DishonestyPlugin {
   constructor(jsPsych) {
     this.jsPsych = jsPsych;
@@ -123,6 +125,9 @@ class DishonestyPlugin {
 
   async trial(display_element, trial) {
     const startTime = performance.now();
+
+    // the jar image arr
+    const jar_images_arr = trial.jar_image_arr;
 
     // data to collect
     const trial_data = {
@@ -205,13 +210,24 @@ class DishonestyPlugin {
       console.log("Entering condition setup");
       for (const condition of CONDITIONS) {
         console.log("Setting up condition:", condition);
-        const envelope = display_element.querySelector(`#envelop-${condition.toLowerCase()}`);
+        const envelope = display_element.querySelector(
+          `#envelop-${condition.toLowerCase()}`
+        );
         console.log("Found envelope:", envelope);
-  
+
         if (envelope) {
           const svg = envelope.querySelector("svg");
           if (svg) {
-            svg.addEventListener("click", () => this.handleUserChoice(condition, display_element, trial_data, trial, enter_advice_html, startTime));
+            svg.addEventListener("click", () =>
+              this.handleUserChoice(
+                condition,
+                display_element,
+                trial_data,
+                trial,
+                enter_advice_html,
+                startTime
+              )
+            );
           } else {
             console.error("SVG element not found for condition:", condition);
           }
@@ -224,20 +240,24 @@ class DishonestyPlugin {
       display_element.querySelectorAll(`.envelop > svg`).forEach((element) => {
         element.classList.add("disabled");
       });
-  
+
       await this.delay(800);
-      const usualEnvelope = display_element.querySelector(`#envelop-${trial.condition.toLowerCase()}`);
+      const usualEnvelope = display_element.querySelector(
+        `#envelop-${trial.condition.toLowerCase()}`
+      );
       if (usualEnvelope) {
         usualEnvelope.innerHTML = envelop_open_SVG_HTML;
       }
       await this.delay(800);
-  
+
       // Add advice prompt
-      display_element.innerHTML += `<h2 style='line-height: 1.5; margin-top: 20px;'>${ADVICE_PROMPT[trial.condition]
+      display_element.innerHTML += `<h2 style='line-height: 1.5; margin-top: 20px;'>${ADVICE_PROMPT[
+        trial.condition
+      ]
         .replace("{num}", trial_data.advice_estimation)
         .replace("{HEX}", trial.envelope_colors[trial.condition])}</h2>`;
       await this.delay(trial.advice_display_duration);
-  
+
       // Set to enter advice HTML
       display_element.innerHTML = enter_advice_html;
       this.setupEventListeners(display_element, trial_data, startTime, trial); // Reattach event listeners
@@ -269,7 +289,14 @@ class DishonestyPlugin {
   }
 
   // Class Function to handle user choice
-  async handleUserChoice(condition, display_element, trial_data, trial, enter_advice_html, startTime) {
+  async handleUserChoice(
+    condition,
+    display_element,
+    trial_data,
+    trial,
+    enter_advice_html,
+    startTime
+  ) {
     console.log("User chose condition:", condition);
 
     // Disable all envelopes

@@ -19,27 +19,21 @@ import { initJsPsych } from "jspsych";
 // customised
 import DishonestyPlugin from "./plugins/dishonesty";
 import {
-
   BLUE_HEX,
   CONDITIONS,
   CONTINUE_PROMT_HTML,
   GREEN_HEX,
+  JARS_IMG_NAMES,
   PRACTICE_JAR_IMG_NAMES,
   PRACTICE_QUIZ,
   RECAP_INSTRUCTION,
   RED_HEX,
 } from "./constants";
-import {
-  createPracticeBlock,
-} from "./block";
+import { createPracticeBlock } from "./block";
 
 // firebase
 import { initializeApp } from "firebase/app";
-import {
-  getFirestore,
-  setDoc,
-  doc
-} from "firebase/firestore";
+import { getFirestore, setDoc, doc } from "firebase/firestore";
 import QuizPlugin from "./plugins/quiz";
 import { initializeAdviceEstimation } from "./block";
 import { createConditionArray } from "./block";
@@ -97,7 +91,6 @@ export async function run({
       console.error("Error adding document:", e);
     }
   };
-
 
   /**
    * Initialising jsPsych and get participant ID.
@@ -223,17 +216,28 @@ export async function run({
   /**
    * Main experiment
    */
-  // initialised the dictionary with image and generated estimation
-  const JAR_IMAGE_ESTIMATION_DICTIONARY = initializeAdviceEstimation();
+
+  // sample 20 images for the curr participant
+  const CURR_JAR_IMAGES = jsPsych.randomization.sampleWithoutReplacement(
+    JARS_IMG_NAMES,
+    20
+  );
+
+  // initialised the dictionary with the selected 20 image and generated estimation
+  const JAR_IMAGE_ESTIMATION_DICTIONARY =
+    initializeAdviceEstimation(CURR_JAR_IMAGES);
   console.log(JAR_IMAGE_ESTIMATION_DICTIONARY);
 
   // create the array the contains the sequence of the conditions showing up in this experiment
-  const condition_arr = createConditionArray();
+  // input curr_jar_images, means that we create the condition array using this
+  const condition_arr = createConditionArray(CURR_JAR_IMAGES);
   console.log(condition_arr);
 
+  // create the base dishonestry trial
   const dishonesty_trial = {
     type: DishonestyPlugin,
     jar_image_estimation_dictionary: JAR_IMAGE_ESTIMATION_DICTIONARY,
+    jar_image_arr: CURR_JAR_IMAGES, // pass the curr jar images to the dishonesty plugin
     // envelope_colors: envelope_colors,
   };
 

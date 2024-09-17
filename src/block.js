@@ -36,11 +36,12 @@ export const initializeAdviceEstimation = (jar_image_arr = JARS_IMG_NAMES) => {
 
 /**
  * Function to create an array of experimental conditions.
+ * @param {Array} jar_image_arr - The array for the jar images going to be used, default is all jar images
  * @returns {Array} condition_array - Array where each condition is repeated based on the number of jar images.
  */
-export const createConditionArray = () => {
+export const createConditionArray = (jar_image_arr = JARS_IMG_NAMES) => {
   // Repeat the CONDITIONS array to match the length of jar images
-  return jsPsych.randomization.repeat(CONDITIONS, JARS_IMG_NAMES.length);
+  return jsPsych.randomization.repeat(CONDITIONS, jar_image_arr.length);
 };
 
 /**
@@ -65,7 +66,7 @@ export const splitCondtionArray = (arr) => {
  * @param {Object} dishonesty_trial - The base trial object to be used.
  * @param {Array} timeline - The timeline array to which trials will be pushed.
  * @param {Array} condition_arr - Array of conditions for this block.
- * @param {boolean} [is_choose_by_user=false] - Flag indicating if the user is choosing the condition.
+ * @param {boolean} [is_choose_by_user=false] - Flag indicating if the user is choosing the envelope.
  */
 export const createBlock = (
   dishonesty_trial,
@@ -98,7 +99,6 @@ export const createPracticeBlock = (
   dishonesty_trial,
   timeline,
   condition_arr,
-
   practice_jar_img_arr
 ) => {
   // Shuffle both the condition array and the practice jar images array
