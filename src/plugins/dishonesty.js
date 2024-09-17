@@ -6,6 +6,9 @@ import {
   FIXATION_CROSS_HTML,
   JARS_IMG_NAMES,
   PRIVATE,
+  GREEN_HEX,
+  BLUE_HEX,
+  RED_HEX
 } from "../constants";
 
 const info = {
@@ -61,11 +64,15 @@ const info = {
     },
     envelope_colors: {
       type: ParameterType.OBJECT,
-      default: null,
+      default: {
+        BASELINE: GREEN_HEX,
+        PRIVATE: RED_HEX,
+        PUBLIC: BLUE_HEX
+      }
     },
     is_choose_by_user: {
       type: ParameterType.BOOL,
-      default: true,
+      default: false,
     },
   },
 };

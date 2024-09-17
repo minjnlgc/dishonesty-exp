@@ -127,35 +127,35 @@ export async function run({
   /**
    * Get the envelope colors based on UTC time
    */
-  const getEnvelopeColors = () => {
-    const currUTCHours = new Date().getUTCHours();
-    console.log(currUTCHours);
+  // const getEnvelopeColors = () => {
+  //   const currUTCHours = new Date().getUTCHours();
+  //   console.log(currUTCHours);
 
-    // Assuming "morning" is defined as before or equal to 12 UTC
-    const isMorning = currUTCHours <= 12;
+  //   // Assuming "morning" is defined as before or equal to 12 UTC
+  //   const isMorning = currUTCHours <= 12;
 
-    // adding the readable color name to all the data
-    jsPsych.data.addProperties({
-      PRIVATE_COLOR: isMorning ? "RED" : "BLUE",
-      PUBLIC_COLOR: isMorning ? "BLUE" : "RED",
-    });
+  //   // adding the readable color name to all the data
+  //   jsPsych.data.addProperties({
+  //     PRIVATE_COLOR: isMorning ? "RED" : "BLUE",
+  //     PUBLIC_COLOR: isMorning ? "BLUE" : "RED",
+  //   });
 
-    console.log({
-      PRIVATE_COLOR: isMorning ? "RED" : "BLUE",
-      PUBLIC_COLOR: isMorning ? "BLUE" : "RED",
-    });
+  //   console.log({
+  //     PRIVATE_COLOR: isMorning ? "RED" : "BLUE",
+  //     PUBLIC_COLOR: isMorning ? "BLUE" : "RED",
+  //   });
 
-    // return the object contains the condition and the corresponding colours set.
-    return {
-      BASELINE: GREEN_HEX,
-      PRIVATE: isMorning ? RED_HEX : BLUE_HEX,
-      PUBLIC: isMorning ? BLUE_HEX : RED_HEX,
-    };
-  };
+  //   // return the object contains the condition and the corresponding colours set.
+  //   return {
+  //     BASELINE: GREEN_HEX,
+  //     PRIVATE: isMorning ? RED_HEX : BLUE_HEX,
+  //     PUBLIC: isMorning ? BLUE_HEX : RED_HEX,
+  //   };
+  // };
 
   // Get the colors for the current participant
-  const envelope_colors = getEnvelopeColors();
-  console.log(envelope_colors);
+  // const envelope_colors = getEnvelopeColors();
+  // console.log(envelope_colors);
 
   // Preload assets
   timeline.push({
@@ -185,7 +185,7 @@ export async function run({
   const practice_dishonesty_trial = {
     type: DishonestyPlugin,
     jar_image_estimation_dictionary: PRACTICE_JAR_IMAGE_ESTIMATION_DICTIONARY,
-    envelope_colors: envelope_colors,
+    // envelope_colors: envelope_colors,
   };
 
   createPracticeBlock(
@@ -234,7 +234,7 @@ export async function run({
   const dishonesty_trial = {
     type: DishonestyPlugin,
     jar_image_estimation_dictionary: JAR_IMAGE_ESTIMATION_DICTIONARY,
-    envelope_colors: envelope_colors,
+    // envelope_colors: envelope_colors,
   };
 
   // split condition array into two halfs, so that we can have two block
@@ -242,7 +242,8 @@ export async function run({
 
   // first block
   // remove slice to see all
-  createBlock(dishonesty_trial, timeline, first_half.slice(0, 3));
+  // true means that user could choose the envelope
+  createBlock(dishonesty_trial, timeline, first_half.slice(0, 3), true);
 
   // break
   timeline.push({
